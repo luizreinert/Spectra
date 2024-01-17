@@ -101,6 +101,7 @@ def criarbarralateral():
     botao5 = criarbotao_pLateral(framebarra, duvidasB, duvidasR)
     botao5.pack(anchor="center", pady=10)
     botao6 = criarbotao_pLateral(framebarra, sairB, sairR)
+    botao6.configure(command=sair)
     botao6.pack(anchor="center", pady=10)
     barralateral.configure(width=70)
     botao_config = criarbotao_pLateral(barralateral, configB, configR)
@@ -111,14 +112,14 @@ def janelainicio():
     botao_dados.configure(state="normal")
 
 def janeladados():
-    global botao_inicio, botao_dados, tabela
+    global botao_inicio, botao_dados, tabela, dados_tabela, teste
     botao_inicio.unbind('<Enter>')
     botao_inicio.unbind('<Leave>')
     botao_dados.configure(state="disabled")
     moldura = ctk.CTkFrame(dados, height=320, width=970, fg_color="#28283C", corner_radius=32, border_width=3, border_color="#54546B")
-    moldura.place(x=35, y=230)
+    moldura.place(x=35, y=220)
     teste = ctk.CTkFrame(dados, height=300, width=1010, fg_color="#141428", bg_color="#141428")
-    teste.place(x=65, y=257)
+    teste.place(x=65, y=247)
     tabela = Sheet(teste, align="center", total_columns=12, total_rows=8, column_width=73, height=265, width=900, row_height=30, show_x_scrollbar=False, show_y_scrollbar=False)
     tabela.create_header_dropdown(c = (10, 11), values=["C+", "C-"])
     Sheet.set_options(tabela, table_bg="#141428", table_grid_fg="#28283C", table_selected_cells_bg="#E4E3E6", index_bg="#505078", index_grid_fg="#28283C", header_bg="#505078", header_grid_fg="#28283C", outline_color="#505078", font=('Helvetica', 10, 'normal'), table_fg='#E4E3E6', index_fg='#E4E3E6', header_fg='#E4E3E6', table_selected_cells_border_fg="#54546B")
@@ -127,6 +128,11 @@ def janeladados():
     tabela.grid(row = 0, column = 0)
     botoes_corantes()
     criarbotao_inserirlimparbac()
+    criarbotao_gerardados()
+    dados_tabela = {'sc': [],'ttc': []}
+    teste = []
+def imprimir():
+    print(dados_tabela)
 
 def criarbotao_escolhaCor(cor):
     if cor == "sc":
@@ -168,7 +174,14 @@ def botoes_corantes():
 def corante_escolhido(a):
     if a == "sc":
         Sheet.highlight_cells(tabela, cells = tabela.get_selected_cells(get_rows = False, get_columns = False, sort_by_row = False, sort_by_column = False), bg = "#999999", fg = "#E4E3E6", redraw = True, overwrite = True)
+        sc_cr = tabela.get_selected_cells(get_rows = False, get_columns = False, sort_by_row = False, sort_by_column = True)
+        for ro, co in sc_cr:
+            data = float(Sheet.get_cell_data(tabela, r=ro, c=co))
+            dados_tabela["sc"].append(data)
+        print(dados_tabela["sc"])
+
     if a == "ttc":
+        dados_tabela['ttc'].append()
         Sheet.highlight_cells(tabela, cells = tabela.get_selected_cells(get_rows = False, get_columns = False, sort_by_row = False, sort_by_column = False), bg = "#FF6666", fg = "#E4E3E6", redraw = True, overwrite = True)      
     if a == "res":
         Sheet.highlight_cells(tabela, cells = tabela.get_selected_cells(get_rows = False, get_columns = False, sort_by_row = False, sort_by_column = False), bg = "#660099", fg = "#E4E3E6", redraw = True, overwrite = True)
@@ -180,7 +193,7 @@ def corante_escolhido(a):
 
 def criarbotao_inserirlimparbac():
     frame_inslimp = ctk.CTkFrame(dados, height=150, width=270, cursor='@Aero.cur', fg_color="#141428", bg_color="#141428", corner_radius=32)
-    frame_inslimp.pack(anchor="w", padx=60)
+    frame_inslimp.pack(anchor="w", padx=60, pady=5)
     frame_inslimp.propagate(False)
     botao_inserir= ctk.CTkButton(frame_inslimp, width=270, height=40, cursor='@Aero.cur', hover_color="#54546B", text="Inserir dados", font=fontegrande, fg_color="#28283C", text_color='#E4E3E6', command= inserir)
     botao_inserir.pack(pady=1)
@@ -197,6 +210,16 @@ def limpar():
 def inserir():
     tabela.paste(tabela.select_cell(row=0, column=0))
 
+
+def criarbotao_gerardados():
+    frame_gerardados = ctk.CTkFrame(dados, height=150, width=270, cursor='@Aero.cur', fg_color="#383854", bg_color="#141428", corner_radius=32)
+    frame_gerardados.place(x=700, y=5)
+    frame_gerardados.propagate(False)
+    botao_gerardados= ctk.CTkButton(frame_gerardados, width=270, height=40, cursor='@Aero.cur', hover_color="#54546B", text="Gerar dados", font=fontegrande, fg_color="#28283C", text_color='#E4E3E6')
+    botao_gerardados.pack(pady=1)
+    botao_gerardados2= ctk.CTkButton(frame_gerardados, width=270, height=40, cursor='@Aero.cur', hover_color="#54546B", text="Gerar dados", font=fontegrande, fg_color="#28283C", text_color='#E4E3E6', command= imprimir)
+    botao_gerardados2.pack(pady=10)
+
 def scrollwheel(event):
     return 'break'
 
@@ -207,7 +230,7 @@ def janelagraficos():
 
 
 def sair():
-    novajanela.destroy()
+    novajanela.withdraw()
     root.deiconify()
    
 
