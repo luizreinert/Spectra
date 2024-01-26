@@ -1,10 +1,14 @@
 import customtkinter as ctk
 import tkinter
+import matplotlib.pyplot as plt
+from matplotlib.ticker import FixedFormatter
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from tkinter import ttk
 from PIL import Image
 from tksheet import Sheet
 from CTkScrollableDropdown import *
-import os
+import mplcursors
 
 ctk.set_appearance_mode("light")
 root = ctk.CTk()
@@ -67,6 +71,7 @@ def telaprincipal():
     novajanela.title("Spectra")
     criarbarralateral()
     janeladados()
+    janelagrafico()
 
 def criarbotao_pLateral(root, icone, iconemouse):
     botao = ctk.CTkButton(master= root, cursor='@Aero.cur', width=40, height=40, image=icone, fg_color="#FFFFFF", text="", text_color="#E3E7F1", anchor="center")
@@ -75,7 +80,7 @@ def criarbotao_pLateral(root, icone, iconemouse):
     return botao
 
 def criarbarralateral():
-    global barralateral, framebarra, botao_inicio, botao_dados, fundopreto, dados, inicio, dados
+    global barralateral, framebarra, botao_inicio, botao_dados, fundopreto, dados, inicio, dados, janela_grafico
     barralateral = ctk.CTkFrame(master=novajanela, width=70, height=600, fg_color="#FFFFFF", bg_color="#E3E7F1")
     barralateral.pack(fill="y", side= "left")
     barralateral.pack_propagate(0)
@@ -87,7 +92,7 @@ def criarbarralateral():
     fundopreto._configure_grid()
     inicio = fundopreto.add("inicio")
     dados = fundopreto.add("dados")
-    hist= fundopreto.add("hist")
+    janela_grafico= fundopreto.add("janela_grafico")
     fundopreto.pack(after=barralateral, side= "right")
     fundopreto.pack_propagate(0)
     botao_inicio = criarbotao_pLateral(framebarra, casaB, casaR)
@@ -98,7 +103,7 @@ def criarbarralateral():
     botao_dados.configure(command= lambda : fundopreto.set("dados"))
     botao_hist = criarbotao_pLateral(framebarra, hisgraficosB, hisgraficosR)
     botao_hist.pack(anchor="center", pady=10)
-    botao_hist.configure(command= lambda : fundopreto.set("hist"))
+    botao_hist.configure(command= lambda : fundopreto.set("janela_grafico"))
     botao_duv = criarbotao_pLateral(framebarra, duvidasB, duvidasR)
     botao_duv.pack(anchor="center", pady=10)
     botao5 = criarbotao_pLateral(framebarra, duvidasB, duvidasR)
@@ -115,7 +120,7 @@ def janelainicio():
     botao_dados.configure(state="normal")
 
 def janeladados():
-    global botao_inicio, botao_dados, tabela, dados_tabela, teste, valores_apagar, resultados_medias
+    global botao_inicio, botao_dados, tabela, dados_tabela, teste, valores_apagar, resultados_medias, media_sc
     botao_inicio.unbind('<Enter>')
     botao_inicio.unbind('<Leave>')
     botao_dados.configure(state="disabled")
@@ -124,11 +129,12 @@ def janeladados():
     teste = ctk.CTkFrame(dados, height=300, width=1010, fg_color="#E3E7F1", bg_color="#E3E7F1")
     teste.place(x=65, y=247)
     tabela = Sheet(teste, align="center", total_columns=12, total_rows=8, column_width=73, height=265, width=900, row_height=30, show_x_scrollbar=False, show_y_scrollbar=False)
-    tabela.create_header_dropdown(c = (10, 11), values=["C+", "C-"])
+    tabela.create_header_dropdown(c = 10, values=["C+", "C-"])
+    tabela.create_header_dropdown(c = 11, values=["C-", "C+"])
     Sheet.set_options(tabela, table_bg="#E3E7F1", table_grid_fg="#FFFFFF", table_selected_cells_bg="#C6CAD1", index_bg="#2B6AD0", index_grid_fg="#FFFFFF", header_bg="#2B6AD0", header_grid_fg="#FFFFFF", font=('Helvetica', 10, 'normal'), table_fg='#000000', index_fg='#E3E7F1', header_fg='#E3E7F1', table_selected_cells_border_fg="#2B6AD0", table_selected_rows_border_fg ="#2B6AD0", table_selected_columns_border_fg= "#2B6AD0")
     tabela.bind('<MouseWheel>', lambda a: scrollwheel)
     tabela.enable_bindings("all", "edit_header", "edit_index", "ctrl_select")
-    tabela.grid(row = 0, column = 0)
+    tabela.pack(expand="True")
     botoes_corantes()
     criarbotao_inserirlimparbac()
     criarbotao_gerardados()
@@ -243,8 +249,16 @@ def criarbotao_inserirlimparbac():
     botao_limpar.bind('<Enter>', lambda e: botao_limpar.configure(text_color="#FBFBFE", fg_color="#2B6AD0"))
     botao_limpar.bind('<Leave>', lambda e: botao_limpar.configure(text_color="#2B6AD0", fg_color="#FBFBFE"))
     tipo_bac= ctk.CTkOptionMenu(frame_inslimp, width=270, height=40, cursor='@Aero.cur', corner_radius=32, values=["Selecione a bacteria"], font=fonte, fg_color="#FBFBFE", text_color='#2B6AD0', button_color='#FBFBFE', anchor="center", button_hover_color="#2B6AD0")
-    CTkScrollableDropdown(tipo_bac, width=270, height=105, button_height=20, frame_border_width=3, cursor='@Aero.cur', values=["Staphylococcus aureus", "Escherichia coli"], hover=False, font=fonte, fg_color="#FBFBFE", text_color='#2B6AD0', scrollbar=False, resize=False, alpha=0.90, button_color="#FBFBFE", justify="Center", frame_border_color="#C6CAD1")
+    CTkScrollableDropdown(tipo_bac, width=270, height=105, button_height=20, frame_border_width=3, cursor='@Aero.cur', values=["Staphylococcus aureus", "Escherichia coli"], hover=False, font=fonte, fg_color="#FBFBFE", text_color='#2B6AD0', scrollbar=False, resize=False, alpha=0.90, button_color="#FBFBFE", justify="Center", frame_border_color="#C6CAD1", command=escolha_bac)
     tipo_bac.pack(pady=8)
+
+def escolha_bac(choice):
+    global bac_escolhida
+    bac_escolhida = ''
+    if choice == "Staphylococcus aureus":
+        bac_escolhida = "Staphylococcus aureus"
+    if choice == "Escherichia coli":
+        bac_escolhida = "Escherichia coli"
 
 def limpar():
     del dados_tabela["am"][:]
@@ -265,13 +279,110 @@ def criarbotao_gerardados():
     frame_gerardados = ctk.CTkFrame(dados, height=150, width=270, cursor='@Aero.cur', fg_color="#FBFBFE", bg_color="#E3E7F1", corner_radius=32)
     frame_gerardados.place(x=800)
     frame_gerardados.propagate(False)
-    botao_gerardados= ctk.CTkButton(frame_gerardados, width=270, height=40, cursor='@Aero.cur', hover_color="#54546B", text="Gerar dados", font=fontegrande, fg_color="#FFFFFF", text_color='#44519e')
+    botao_gerardados= ctk.CTkButton(frame_gerardados, width=270, height=40, cursor='@Aero.cur', hover_color="#54546B", text="Gerar dados", font=fontegrande, fg_color="#FFFFFF", text_color='#44519e', command=calculos)
     botao_gerardados.pack(pady=1)
     botao_gerardados2= ctk.CTkButton(frame_gerardados, width=270, height=40, cursor='@Aero.cur', hover_color="#54546B", text="Gerar dados", font=fontegrande, fg_color="#FFFFFF", text_color='#44519e')
     botao_gerardados2.pack(pady=10)
 
+def calculos():
+    global bac_escolhida
+    calculos2('sc')
+    calculos2('ttc')
+    calculos2('res')
+    calculos2('am')
+    dil_saureus = [0.02, 0.03, 0.06, 0.125, 0.25, 0.5, 1.0, 2.0, 4.0, 8.0]
+    dil_ecoli = [0.0005, 0.001, 0.002, 0.004, 0.008, 0.016, 0.032, 0.064, 0.128, 0.256]
+    grafico1 = Figure(figsize=(10, 5.5), facecolor="#4DAFFF")
+    ax1 = grafico1.subplots()
+    if bac_escolhida == "Staphylococcus aureus":
+        linha = ax1.plot(dil_saureus, [-0.11, 22.45, 19.41, 0.11, 11.28, 53.47, 100.22, 100.43, 100.54, 100.22])
+    if bac_escolhida == "Escherichia coli":
+        print('Vc escolheu escherichia coli')
+        linha = ax1.plot(dil_ecoli, [-0.11, 22.45, 19.41, 0.11, 11.28, 53.47, 100.22, 100.43, 100.54, 100.22])
+    canvas = FigureCanvasTkAgg(master= janela_grafico, figure=grafico1)
+    canvas.draw()
+    canvas.get_tk_widget().place(x=55, y=23)
+    hover = mplcursors.cursor(linha, hover=True)
+    
+    
+def calculos2(cor):
+    global porcentagens
+    porcentagens = {"sc": [], "ttc": [], "res": [], "am": []}
+    controle = Sheet.get_header_dropdown_value(tabela, c=10)
+    controle2 = Sheet.get_header_dropdown_value(tabela, c=11)
+    if cor == 'sc':
+        for valor in resultados_medias["sc"]:
+            try:
+                if controle != controle2:
+                    if controle == 'C+':
+                        resultado = 100-(valor*100/resultados_medias["sc"][-2])
+                    if controle == 'C-':
+                        resultado = 100-(valor*100/resultados_medias["sc"][-1])
+                else:
+                    print('Os dois controles estão iguais!')
+                    break
+            except ZeroDivisionError:
+                resultado = 0
+            resultado_lim = round(resultado, 2)
+            porcentagens["sc"].append(resultado_lim)
+    if cor == 'ttc':
+        for valor in resultados_medias["ttc"]:
+            try:
+                if controle != controle2:
+                    if controle == 'C+':
+                        resultado = 100-(valor*100/resultados_medias["ttc"][-2])
+                    if controle == 'C-':
+                        resultado = 100-(valor*100/resultados_medias["ttc"][-1])
+                else:
+                    print('Os dois controles estão iguais!')
+                    break
+            except ZeroDivisionError:
+                resultado = 0
+            resultado_lim = round(resultado, 2)
+            porcentagens["ttc"].append(resultado_lim)
+    if cor == 'res':
+        for valor in resultados_medias["res"]:
+            try:
+                if controle != controle2:
+                    if controle == 'C+':
+                        resultado = 100-(valor*100/resultados_medias["res"][-2])
+                    if controle == 'C-':
+                        resultado = 100-(valor*100/resultados_medias["res"][-1])
+                else:
+                    print('Os dois controles estão iguais!')
+                    break
+            except ZeroDivisionError:
+                resultado = 0
+            resultado_lim = round(resultado, 2)
+            porcentagens["res"].append(resultado_lim)
+    if cor == 'am':
+        for valor in resultados_medias["am"]:
+            try:
+                if controle != controle2:
+                    if controle == 'C+':
+                        resultado = 100-(valor*100/resultados_medias["am"][-1])
+                    if controle == 'C-':
+                        resultado = 100-(valor*100/resultados_medias["am"][-2])
+                else:
+                    print('Os dois controles estão iguais!')
+                    break
+            except ZeroDivisionError:
+                resultado = 0
+            resultado_lim = round(resultado, 2)
+            porcentagens["am"].append(resultado_lim)
+                    
+    print(porcentagens["sc"])
+    print(porcentagens["ttc"])
+    print(porcentagens["res"])
+    print(porcentagens["am"])
+
 def scrollwheel(event):
     return 'break'
+    
+def janelagrafico():
+    global molduragraf
+    molduragraf = ctk.CTkFrame(janela_grafico, height=410, width=970, fg_color="#FFFFFF", corner_radius=32)
+    molduragraf.place(x=30, y=120)
 
 def sair():
     novajanela.withdraw()
