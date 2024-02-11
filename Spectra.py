@@ -8,15 +8,18 @@ from PIL import Image
 from tksheet import Sheet
 from CTkScrollableDropdown import *
 import mplcursors
-import webbrowser
+import json
 
+with open('textfile.txt', 'r', encoding='utf-8') as file:
+    strings_txt = json.load(file)
+    
 ctk.set_appearance_mode("light")
 novajanela = ctk.CTk()
 novajanela.iconbitmap("ícones\logos\icone_programa.ico")
 novajanela.resizable(False, False)
 novajanela.geometry("1300x600+450+190")
 novajanela.title("Spectra")
-fonte_icones = ctk.CTkFont(family="Segoe UI", size=15, weight='bold')
+fonte_icones = ctk.CTkFont(family="Segoe UI", size=17, weight='bold')
 fonte_iconesnormal = ctk.CTkFont(family="Segoe UI", size=14, weight='normal')
 fonte = ctk.CTkFont(family="Segoe UI", size=16, weight='bold')
 fontenormal = ctk.CTkFont(family="Segoe UI", size=18)
@@ -42,7 +45,7 @@ jpg = ctk.CTkImage(size=[25, 25], light_image=Image.open("ícones\jpg.png"))
 svg = ctk.CTkImage(size=[25, 25], light_image=Image.open("ícones\svg.png"))
 
 def criarbotao_pLateral(root, icon, texto):
-    botao = ctk.CTkButton(master= root, cursor='@Aero.cur', width=150, height=40, image=icon, hover_color="#FBFBFE", font= fonte_icones, fg_color="#2B6AD0", text=texto, anchor="w")
+    botao = ctk.CTkButton(master= root, cursor='hand2', width=150, height=40, image=icon, hover_color="#FBFBFE", font= fonte_icones, fg_color="#2B6AD0", text=texto, anchor="w")
     return botao
 
 def criarbarralateral():
@@ -61,10 +64,8 @@ def criarbarralateral():
     janela_info = fundocinza.add("informacoes")
     fundocinza.pack(after=barralateral, side= "right")
     fundocinza.pack_propagate(0)
-
     imglogo = ctk.CTkLabel(master=barralateral, image=imagemlogo, text="")
     imglogo.place(x=10, y=20)
-
     botao_dados = criarbotao_pLateral(framebarra, tabelaB, "Inserir dados")
     botao_dados.pack(anchor="center", pady=10)
     botao_dados.configure(command= lambda: tab_switch("dados"))
@@ -93,13 +94,22 @@ def criarbarralateral():
     tab_switch("dados")
 
 def hover_fix(tab, botao, icon):
-    if tab != "config" and tab != "sair":
-        fundocinza.set(tab)
-    botao.unbind('<Enter>')
-    botao.unbind('<Leave>')
-    botao.configure(fg_color="#FBFBFE", image=icon, text_color="#2B6AD0")
     if tab == "sair":
         novajanela.destroy()
+    if tab != "config" and tab != "janela_grafico":
+        fundocinza.set(tab)
+        botao.unbind('<Enter>')
+        botao.unbind('<Leave>')
+        botao.configure(fg_color="#FBFBFE", image=icon, text_color="#2B6AD0")
+    if tab == "janela_grafico":
+        if all(not lista for lista in porcentagens.values()) == False or len(mediasresazurina["res"]) > 0:
+            fundocinza.set(tab)
+            botao.unbind('<Enter>')
+            botao.unbind('<Leave>')
+            botao.configure(fg_color="#FBFBFE", image=icon, text_color="#2B6AD0")
+        else:
+            tkinter.messagebox.showwarning(title="Erro", message="Nenhum gráfico encontrado!")
+            fundocinza.set(fundocinza.get())
 
 def tab_switch(botao):
     if botao == "dados":
@@ -203,21 +213,34 @@ def corante_escolhido(a):
         if a == "sc":
             if len(dados_tabela["sc"]) >= 1:
                 del dados_tabela["sc"][:]
-                del resultados_medias["sc"][:]
+                del resultados_medias["sc"][:] 
             Sheet.highlight_cells(tabela, cells = tabela.get_selected_cells(get_rows = False, get_columns = False, sort_by_row = False, sort_by_column = False), bg = "#999999", fg = "#000000", redraw = True, overwrite = True)
             sc_cr = tabela.get_selected_cells(get_rows = False, get_columns = False, sort_by_row = False, sort_by_column = True)
             if len(sc_cr) > 24:
-                tkinter.messagebox.showerror(title="Erro", message="Erro: Você só pode selecionar uma duplicata por corante.")
+                tkinter.messagebox.showerror(title="Erro", message="Só é possível selecionar uma duplicata por corante")
+                tabela.dehighlight_cells(cells = tabela.get_selected_cells(get_rows = False, get_columns = False, sort_by_row = False, sort_by_column = False))
+                return
+            if len(sc_cr) < 24:
+                tkinter.messagebox.showerror(title="Erro", message="Deve ser selecionada ao menos uma duplicata")
                 tabela.dehighlight_cells(cells = tabela.get_selected_cells(get_rows = False, get_columns = False, sort_by_row = False, sort_by_column = False))
                 return
             for ro, co in sc_cr:
-                data = float(Sheet.get_cell_data(tabela, r=ro, c=co))
-                dados_tabela["sc"].append(data)
+                data = str(Sheet.get_cell_data(tabela, r=ro, c=co))
+                trocar_virgula = data.replace(',', ".")
+                dados_tabela["sc"].append(float(trocar_virgula))
             for i in range(0, len(dados_tabela["sc"]), 2):
                 valor = dados_tabela["sc"][i]
                 proximo = dados_tabela["sc"][i+1]
                 resultado = (valor + proximo) / 2 
                 resultados_medias["sc"].append(resultado)
+            if resultados_medias["sc"] == resultados_medias["ttc"]:
+                del resultados_medias["ttc"][:]
+            if resultados_medias["sc"] == resultados_medias["am"]:
+                del resultados_medias["am"][:]
+            if resultados_medias["sc"] == resultados_medias["res_570"]:
+                del resultados_medias["res_570"]
+            if resultados_medias["sc"] == resultados_medias["res_600"]:
+                del resultados_medias["res_600"]
         if a == "ttc":
             if len(dados_tabela["ttc"]) >= 1:
                 del dados_tabela["ttc"] [:]
@@ -228,14 +251,27 @@ def corante_escolhido(a):
                 tkinter.messagebox.showerror(title="Erro", message="Erro: Você só pode selecionar uma duplicata por corante.")
                 tabela.dehighlight_cells(cells = tabela.get_selected_cells(get_rows = False, get_columns = False, sort_by_row = False, sort_by_column = False))
                 return
+            if len(ttc_cr) < 24:
+                tkinter.messagebox.showerror(title="Erro", message="Deve ser selecionada ao menos uma duplicata")
+                tabela.dehighlight_cells(cells = tabela.get_selected_cells(get_rows = False, get_columns = False, sort_by_row = False, sort_by_column = False))
+                return
             for ro, co in ttc_cr:
-                data = float(Sheet.get_cell_data(tabela, r=ro, c=co))
-                dados_tabela["ttc"].append(data)
+                data = str(Sheet.get_cell_data(tabela, r=ro, c=co))
+                trocar_virgula = data.replace(',', ".")
+                dados_tabela["ttc"].append(float(trocar_virgula))
             for i in range(0, len(dados_tabela["ttc"]), 2):
                 valor = dados_tabela["ttc"][i]
                 proximo = dados_tabela["ttc"][i+1]
                 resultado = (valor + proximo) / 2 
                 resultados_medias["ttc"].append(resultado)
+            if resultados_medias["ttc"] == resultados_medias["sc"]:
+                del resultados_medias["sc"][:]
+            if resultados_medias["ttc"] == resultados_medias["am"]:
+                del resultados_medias["am"][:]
+            if resultados_medias["ttc"] == resultados_medias["res_570"]:
+                del resultados_medias["res_570"]
+            if resultados_medias["ttc"] == resultados_medias["res_600"]:
+                del resultados_medias["res_600"]
         if a == "res_570":
             if len(dados_tabela["res_570"]) >= 1:
                 del dados_tabela["res_570"] [:]
@@ -246,14 +282,27 @@ def corante_escolhido(a):
                 tkinter.messagebox.showerror(title="Erro", message="Erro: Você só pode selecionar uma duplicata por corante.")
                 tabela.dehighlight_cells(cells = tabela.get_selected_cells(get_rows = False, get_columns = False, sort_by_row = False, sort_by_column = False))
                 return
+            if len(res_cr) < 24:
+                tkinter.messagebox.showerror(title="Erro", message="Deve ser selecionada ao menos uma duplicata")
+                tabela.dehighlight_cells(cells = tabela.get_selected_cells(get_rows = False, get_columns = False, sort_by_row = False, sort_by_column = False))
+                return
             for ro, co in res_cr:
-                data = float(Sheet.get_cell_data(tabela, r=ro, c=co))
-                dados_tabela["res_570"].append(data)
+                data = str(Sheet.get_cell_data(tabela, r=ro, c=co))
+                trocar_virgula = data.replace(',', ".")
+                dados_tabela["res_570"].append(float(trocar_virgula))
             for i in range(0, len(dados_tabela["res_570"]), 2):
                 valor = dados_tabela["res_570"][i]
                 proximo = dados_tabela["res_570"][i+1]
                 resultado = (valor + proximo) / 2 
-                resultados_medias["res_570"].append(resultado)  
+                resultados_medias["res_570"].append(resultado)
+            if resultados_medias["res_570"] == resultados_medias["sc"]:
+                del resultados_medias["sc"][:]
+            if resultados_medias["res_570"] == resultados_medias["am"]:
+                del resultados_medias["am"][:]
+            if resultados_medias["res_570"] == resultados_medias["ttc"]:
+                del resultados_medias["ttc"][:]     
+            if resultados_medias["res_570"] == resultados_medias["res_600"]:
+                del resultados_medias["res_600"]
         if a == "res_600":
             if len(dados_tabela["res_600"]) >= 1:
                 del dados_tabela["res_600"] [:]
@@ -264,14 +313,27 @@ def corante_escolhido(a):
                 tkinter.messagebox.showerror(title="Erro", message="Erro: Você só pode selecionar uma duplicata por corante.")
                 tabela.dehighlight_cells(cells = tabela.get_selected_cells(get_rows = False, get_columns = False, sort_by_row = False, sort_by_column = False))
                 return
+            if len(res2_cr) < 24:
+                tkinter.messagebox.showerror(title="Erro", message="Deve ser selecionada ao menos uma duplicata")
+                tabela.dehighlight_cells(cells = tabela.get_selected_cells(get_rows = False, get_columns = False, sort_by_row = False, sort_by_column = False))
+                return
             for ro, co in res2_cr:
-                data = float(Sheet.get_cell_data(tabela, r=ro, c=co))
-                dados_tabela["res_600"].append(data)
+                data = str(Sheet.get_cell_data(tabela, r=ro, c=co))
+                trocar_virgula = data.replace(',', ".")
+                dados_tabela["res_600"].append(float(trocar_virgula))
             for i in range(0, len(dados_tabela["res_600"]), 2):
                 valor = dados_tabela["res_600"][i]
                 proximo = dados_tabela["res_600"][i+1]
                 resultado = (valor + proximo) / 2 
                 resultados_medias["res_600"].append(resultado)  
+            if resultados_medias["res_600"] == resultados_medias["sc"]:
+                del resultados_medias["sc"][:]
+            if resultados_medias["res_600"] == resultados_medias["am"]:
+                del resultados_medias["am"][:]
+            if resultados_medias["res_600"] == resultados_medias["ttc"]:
+                del resultados_medias["ttc"][:]  
+            if resultados_medias["res_600"] == resultados_medias["res_570"]:
+                del resultados_medias["res_570"][:]     
         if a == "am":
             if len(dados_tabela["am"]) >= 1:
                 del dados_tabela["am"] [:]
@@ -282,16 +344,29 @@ def corante_escolhido(a):
                 tkinter.messagebox.showerror(title="Erro", message="Erro: Você só pode selecionar uma duplicata por corante.")
                 tabela.dehighlight_cells(cells = tabela.get_selected_cells(get_rows = False, get_columns = False, sort_by_row = False, sort_by_column = False))
                 return
+            if len(am_cr) < 24:
+                tkinter.messagebox.showerror(title="Erro", message="Deve ser selecionada ao menos uma duplicata")
+                tabela.dehighlight_cells(cells = tabela.get_selected_cells(get_rows = False, get_columns = False, sort_by_row = False, sort_by_column = False))
+                return
             for ro, co in am_cr:
-                data = float(Sheet.get_cell_data(tabela, r=ro, c=co))
-                dados_tabela["am"].append(data)
+                data = str(Sheet.get_cell_data(tabela, r=ro, c=co))
+                trocar_virgula = data.replace(',', ".")
+                dados_tabela["am"].append(float(trocar_virgula))
             for i in range(0, len(dados_tabela["am"]), 2):
                 valor = dados_tabela["am"][i]
                 proximo = dados_tabela["am"][i+1]
                 resultado = (valor + proximo) / 2 
                 resultados_medias["am"].append(resultado)
+            if resultados_medias["am"] == resultados_medias["sc"]:
+                del resultados_medias["sc"][:]
+            if resultados_medias["am"] == resultados_medias["ttc"]:
+                del resultados_medias["ttc"][:]  
+            if resultados_medias["am"] == resultados_medias["res_570"]:
+                del resultados_medias["res_570"][:]     
+            if resultados_medias["am"] == resultados_medias["res_600"]:
+                del resultados_medias["res_600"]
     except ValueError:
-        tkinter.messagebox.showerror(title="Dados inválidos", message="Verifique se os decimais estão separados por ponto")
+        tkinter.messagebox.showerror(title="Dados inválidos", message="Dados inválidos!")
         tabela.dehighlight_cells(cells = tabela.get_selected_cells(get_rows = False, get_columns = False, sort_by_row = False, sort_by_column = False))
         Sheet.delete(tabela, tabela.get_selected_cells(get_rows = False, get_columns = False, sort_by_row = False, sort_by_column = False))      
     if a == "pv":
@@ -313,15 +388,15 @@ def criarbotao_inserir():
     frame_inslimp = ctk.CTkFrame(janela_dados, height=198, width=300, fg_color="#FBFBFE", bg_color="#E3E7F1", corner_radius=16)
     frame_inslimp.place(x=422)
     frame_inslimp.propagate(False)
-    botao_inserir= ctk.CTkButton(frame_inslimp, width=270, height=55, corner_radius=10, cursor='@Aero.cur', text="Colar dados", border_color="#999999", border_width=4, font=fontegrande, fg_color="#FBFBFE", text_color='black', command= lambda : tabela.paste(tabela.select_cell(row=0, column=0)))
+    botao_inserir= ctk.CTkButton(frame_inslimp, width=270, height=55, corner_radius=10, cursor='hand2', text="Colar dados", border_color="#999999", border_width=4, font=fontegrande, fg_color="#FBFBFE", text_color='black', command= lambda : tabela.paste(tabela.select_cell(row=0, column=0)))
     botao_inserir.pack(pady=6)
     botao_inserir.bind('<Enter>', lambda e: botao_inserir.configure(text_color="#FBFBFE", fg_color="#2B6AD0"))
     botao_inserir.bind('<Leave>', lambda e: botao_inserir.configure(text_color="black", fg_color="#FBFBFE"))
-    botao_limpar= ctk.CTkButton(frame_inslimp, width=270, height=55, corner_radius=10, cursor='@Aero.cur', hover_color="#2B6AD0", border_color="#999999", border_width=4, text="Limpar tabela", font=fontegrande, fg_color="#FBFBFE", text_color='black', command= limpar)
+    botao_limpar= ctk.CTkButton(frame_inslimp, width=270, height=55, corner_radius=10, cursor='hand2', hover_color="#2B6AD0", border_color="#999999", border_width=4, text="Limpar tabela", font=fontegrande, fg_color="#FBFBFE", text_color='black', command= limpar)
     botao_limpar.pack(pady=6)
     botao_limpar.bind('<Enter>', lambda e: botao_limpar.configure(text_color="#FBFBFE", fg_color="#2B6AD0"))
     botao_limpar.bind('<Leave>', lambda e: botao_limpar.configure(text_color="black", fg_color="#FBFBFE"))
-    botao_gerardados= ctk.CTkButton(frame_inslimp, width=270, height=55, corner_radius=10, cursor='@Aero.cur', hover_color="#2B6AD0", border_color="#999999", border_width=4, text="Gerar gráfico", font=fontegrande, fg_color="#FBFBFE", text_color='black', command= calculos)
+    botao_gerardados= ctk.CTkButton(frame_inslimp, width=270, height=55, corner_radius=10, cursor='hand2', hover_color="#2B6AD0", border_color="#999999", border_width=4, text="Gerar gráfico", font=fontegrande, fg_color="#FBFBFE", text_color='black', command= calculos)
     botao_gerardados.pack(pady=6)
     botao_gerardados.bind('<Enter>', lambda e: botao_gerardados.configure(text_color="#FBFBFE", fg_color="#2B6AD0"))
     botao_gerardados.bind('<Leave>', lambda e: botao_gerardados.configure(text_color="black", fg_color="#FBFBFE"))
@@ -361,7 +436,8 @@ def limpar():
     del dados_tabela["am"][:], dados_tabela["sc"][:], dados_tabela["ttc"][:], dados_tabela["res_570"][:], dados_tabela["res_600"][:]
     del resultados_medias["am"][:], resultados_medias["sc"][:], resultados_medias["ttc"][:], resultados_medias["res_570"][:], resultados_medias["res_600"][:]
     del porcentagens["am"][:], porcentagens["sc"][:], porcentagens["ttc"][:], porcentagens["res_570"][:], porcentagens["res_600"][:]
-    tabela.set_sheet_data(data=([]), redraw=False, reset_col_positions=False, reset_row_positions=False)
+    del mediasresazurina["res"][:]
+    tabela.set_sheet_data(data=([]), redraw=False, reset_col_positions=False, reset_row_positions=False, reset_highlights=True)
     tabela.refresh
 
 def calculos():
@@ -372,13 +448,13 @@ def calculos():
         calculos2('res')
         calculos2('am')
         if bac_escolhida == "Staphylococcus aureus":
-            gerargraficos("s_aureus")
+            gerar_grafico("s_aureus")
         if bac_escolhida == "Escherichia coli":
-            gerargraficos("e_coli")
+            gerar_grafico("e_coli")
     except NameError:
         tkinter.messagebox.showerror(title="Erro", message="Selecione a bactéria utilizada")
 
-def gerargraficos(bac):
+def gerar_grafico(bac):
     global ax, canvas, grafico1
     dil_saureus = ["0.02", "0.03", "0.06", "0.125", "0.25", "0.5", "1.0", "2.0", "4.0", "8.0"]
     dil_ecoli = ["0.0005", "0.001", "0.002", "0.004", "0.008", "0.016", "0.032", "0.064", "0.128", "0.256"]
@@ -490,7 +566,7 @@ def janelagrafico():
     molduraopcoes = ctk.CTkFrame(janela_grafico, height=100, width=650, fg_color="#FFFFFF", corner_radius=16)
     molduraopcoes.pack(anchor="ne", padx=30)
     molduraopcoes.pack_propagate(False)
-    salvarcomo = ctk.CTkButton(molduraopcoes, width=170, height=55, corner_radius=10, cursor='@Aero.cur', hover=False, text="Salvar como:", font=fonte, fg_color="#2B6AD0", text_color='#FBFBFE')
+    salvarcomo = ctk.CTkButton(molduraopcoes, width=170, height=55, corner_radius=10, cursor='hand2', hover=False, text="Salvar como:", font=fonte, fg_color="#2B6AD0", text_color='#FBFBFE')
     salvarcomo.pack(anchor="w", padx=15, pady=15)
     salvarcomo2 = CTkScrollableDropdown(salvarcomo, values=[".jpg", ".png", ".pdf", ".svg"], font=fontenormal, scrollbar=False, alpha=0.97, height=223, resize=False, image_values=[jpg, png, pdf, svg], fg_color="#FBFBFE", button_color="#C6CAD1", text_color="black", button_height=40, width=160, command= salvargrafico)
     salvarcomo2.configure(hover_color="#2B6AD0")
@@ -523,12 +599,17 @@ def salvargrafico(choice):
         else:
             return
 
-def criarbotao_infoAmacoes(texto, comando):
-    botao = ctk.CTkButton(moldurabarra, cursor='@Aero.cur', width=170, height=60, hover_color="#FBFBFE", font=ctk.CTkFont(family="Segoe UI", size=19, weight='bold'), text=texto, fg_color="#2B6AD0", corner_radius=16, command = comando)
-    botao.pack(anchor="nw", padx=15, pady= 30)
+def criarbotao_informacoes(texto, comando):
+    botao = ctk.CTkButton(moldurabarra, cursor='hand2', width=170, height=60, hover_color="#FBFBFE", font=ctk.CTkFont(family="Segoe UI", size=18, weight='bold'), text=texto, fg_color="#2B6AD0", corner_radius=16, command = comando)
     return botao
 
-def janelainfoAmacoes():
+def criartexto(main, texto):
+    textbox = tkinter.Text(main, wrap="word", blockcursor=True, width=85, height=70, font=ctk.CTkFont(family="Segoe UI", size=16, weight='normal'), cursor="arrow")
+    textbox.place(x=15, y=80) 
+    textbox.insert("0.0", *texto)
+    textbox.bindtags((str(textbox), str(textbox), "all"))
+
+def janelainformacoes():
     global moldurabarra, moldurainfo, botao_sobre, botao_infoteste
     moldurabarra = ctk.CTkFrame(janela_info, height= 530, width=1050, fg_color="#2B6AD0", corner_radius=16)
     moldurabarra.place(x=20)
@@ -542,18 +623,13 @@ def janelainfoAmacoes():
     sobre = moldurainfo.add("sobre")
     teste = moldurainfo.add("testeinfo")
     moldurainfo.set("sobre")
-    botao_sobre = criarbotao_infoAmacoes("Sobre o projeto", lambda: tab_switch_info("sobre"))
-    ctk.CTkLabel(sobre, wraplength=840, anchor="center", font=ctk.CTkFont(family="Segoe UI", size=19, weight='bold'),justify="center", text_color="#2B6AD0", text="Este projeto faz parte do trabalho de conclusão de curso em Biomedicina realizado pelo aluno Luiz Henrique Reinert, sob orientação da Prof.ª Dr.ª Katiany Rizzieri Caleffi Ferracioli.").pack(anchor="w")
-    ctk.CTkLabel(sobre, wraplength=840, anchor="center", font=ctk.CTkFont(family="Segoe UI", size=16, weight='normal'),justify="left", text_color="black", text="Inicialmente pensado na disciplina de Atividade em Laboratório Clínico II (ALC II), no setor de bacteriologia médica, o projeto consistia em uma planilha automatizada no Microsoft Excel."
-    " Nessa abordagem, os cálculos eram realizados por fórmulas embutidas nas células, e os gráficos eram gerados usando as funcionalidades nativas do Excel. Esse projeto serviu como base para"
-    " a elaboração de um artigo, que pode ser acessado em  https://doi.org/10.46311/2318-0579.60.eUJ4398").pack(anchor= "w", pady=15, padx=10)
-    ctk.CTkLabel(sobre, wraplength=840, anchor="center", font=ctk.CTkFont(family="Segoe UI", size=16, weight='normal'),justify="left", text_color="black", text="No entanto, a aplicação dessa planilha enfrentava desafios relacionados a erros de compatibilidade entre diferentes versões, além de apresentar limitações de interatividade no design do Excel."
-    " Diante dessas questões, surgiu a ideia de aprimorar o projeto transformando a planilha em um programa executável. O principal objetivo dessa transformação era otimizar a execução de experimentos," 
-    " superando as limitações das planilhas e possibilitando uma distribuição mais eficiente do programa entre usuários interessados.").pack(anchor= "w", pady=15, padx=10)
-    ctk.CTkLabel(sobre, wraplength=840, anchor="center", font=ctk.CTkFont(family="Segoe UI", size=16, weight='normal'),justify="left", text_color="black", text="Dessa forma, unindo o meu interesse no aprendizado em programação, decidi incorporar essa transformação como parte integrante do meu Trabalho de Conclusão de Curso (TCC)."
-    " O novo formato executável visa proporcionar uma experiência mais intuitiva e interativa, com o objetivo de tornar a administração dos experimentos mais eficiente.").pack(anchor= "w", pady=15, padx=10)
-    botao_infoteste = criarbotao_infoAmacoes("teste", lambda: tab_switch_info("botao_infoteste"))
-    ctk.CTkLabel(teste, height=100, width=100, font=fontegrande, text="teste").pack(anchor="w")
+    botao_sobre = criarbotao_informacoes("Sobre o projeto", lambda: tab_switch_info("sobre"))
+    botao_sobre.place(x=15, y=120)
+    ctk.CTkLabel(sobre, wraplength=840, anchor="center", font=ctk.CTkFont(family="Segoe UI", size=19, weight='bold'),justify="center", text_color="#2B6AD0", text="Este projeto faz parte do trabalho de conclusão de curso em Biomedicina realizado pelo aluno Luiz Henrique Reinert, sob orientação da Prof.ª Dr.ª Katiany Rizzieri Caleffi Ferracioli.").pack(anchor="w", pady=15)
+    textbox_sobre = criartexto(sobre, strings_txt["sobre"])
+    botao_infoteste = criarbotao_informacoes("teste", lambda: tab_switch_info("botao_infoteste"))
+    botao_infoteste.place(x=15, y=230)
+    textbox_sobre = criartexto(teste, strings_txt["codigo_fonte"])
     tab_switch_info("sobre")
 
 def hoverfix_info(tab, botao):
@@ -579,5 +655,5 @@ def tab_switch_info(botao):
 criarbarralateral()
 janeladados()
 janelagrafico()
-janelainfoAmacoes()
+janelainformacoes()
 novajanela.mainloop()
