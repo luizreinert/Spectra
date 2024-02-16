@@ -7,11 +7,12 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from PIL import Image
 from tksheet import Sheet
 from CTkScrollableDropdown import *
-import mplcursors
-import json
+from mplcursors import cursor
+from json import load
+from webbrowser import open_new
 
 with open('textfile.txt', 'r', encoding='utf-8') as file:
-    strings_txt = json.load(file)
+    strings_txt = load(file)
 annotations = []
 
 ctk.set_appearance_mode("light")
@@ -46,16 +47,14 @@ jpg = ctk.CTkImage(size=[25, 25], light_image=Image.open("ícones\jpg.png"))
 svg = ctk.CTkImage(size=[25, 25], light_image=Image.open("ícones\svg.png"))
 
 def criarbotao_pLateral(root, icon, texto):
-    botao = ctk.CTkButton(master= root, cursor='hand2', width=150, height=40, image=icon, hover_color="#FBFBFE", font= fonte_icones, fg_color="#2B6AD0", text=texto, anchor="w")
+    botao = ctk.CTkButton(master= root, cursor='hand2', width=160, height=40, image=icon, hover_color="#FBFBFE", font= fonte_icones, fg_color="#2B6AD0", text=texto, anchor="w")
     return botao
 
 def criarbarralateral():
-    global barralateral, framebarra, botao_dados, botao_grafico, botao_info, botao_config, botao_sair, fundocinza, janela_dados, janela_grafico, janela_info
+    global barralateral, barralateral, botao_dados, botao_grafico, botao_info, botao_config, botao_sair, fundocinza, janela_dados, janela_grafico, janela_info
     barralateral = ctk.CTkFrame(master=novajanela, width=200, height=600, fg_color="#2B6AD0", bg_color="#2B6AD0")
-    barralateral.pack(fill="y", side= "left")
-    barralateral.pack_propagate(0)
-    framebarra = ctk.CTkFrame(master=barralateral, width=200, height=325, fg_color="transparent")
-    framebarra.pack(fill="none", anchor="center", expand="True")
+    barralateral.grid(row=0, column=0, sticky="nsew")
+    barralateral.grid_propagate(False)
     fundocinza = ctk.CTkTabview(master=novajanela, width=1129, height=600, fg_color="#E3E7F1", state="disabled", anchor="ne", bg_color="#E3E7F1", text_color="#E3E7F1", segmented_button_fg_color="#E3E7F1", segmented_button_unselected_color="#E3E7F1", segmented_button_selected_hover_color="#E3E7F1", segmented_button_unselected_hover_color="#E3E7F1", text_color_disabled="#E3E7F1", segmented_button_selected_color="#E3E7F1")
     fundocinza._outer_button_overhang = 0
     fundocinza._segmented_button.grid_forget()
@@ -63,34 +62,40 @@ def criarbarralateral():
     janela_dados = fundocinza.add("dados")
     janela_grafico= fundocinza.add("janela_grafico")
     janela_info = fundocinza.add("informacoes")
-    fundocinza.pack(after=barralateral, side= "right")
-    fundocinza.pack_propagate(0)
+    fundocinza.grid(row=0, column=1, sticky="nsew")
+    fundocinza.grid_propagate(False)
     imglogo = ctk.CTkLabel(master=barralateral, image=imagemlogo, text="")
-    imglogo.place(x=10, y=20)
-    botao_dados = criarbotao_pLateral(framebarra, tabelaB, "Inserir dados")
-    botao_dados.pack(anchor="center", pady=10)
+    imglogo.grid(row=0, pady=17, padx=10, sticky="n")
+
+    espaço = ctk.CTkLabel(barralateral, text="\n\n\n\n")
+    espaço.grid(row=1)
+
+    botao_dados = criarbotao_pLateral(barralateral, tabelaB, "Inserir dados")
+    botao_dados.grid(row=2, pady=8)
     botao_dados.configure(command= lambda: tab_switch("dados"))
 
-    botao_grafico = criarbotao_pLateral(framebarra, graficoB, "Gráfico")
-    botao_grafico.pack(anchor="center", pady=10)
+    botao_grafico = criarbotao_pLateral(barralateral, graficoB, "Gráfico")
+    botao_grafico.grid(row=3, pady=8)
     botao_grafico.configure(command= lambda : tab_switch("janela_grafico"))
 
-    botao_info = criarbotao_pLateral(framebarra, infoB, "Informações")
-    botao_info.pack(anchor="center", pady=10)
+    botao_info = criarbotao_pLateral(barralateral, infoB, "Informações")
+    botao_info.grid(row=4, pady=8)
     botao_info.configure(command= lambda: tab_switch("informacoes"))
 
-    botao5 = criarbotao_pLateral(framebarra, infoB, "Null")
-    botao5.pack(anchor="center", pady=10)
+    botao5 = criarbotao_pLateral(barralateral, infoB, "Null")
+    botao5.grid(row=5, pady=8)
     botao5.configure(state="disabled", command= lambda: tab_switch("informacoes"))
 
-    botao_sair = criarbotao_pLateral(framebarra, sairB, "Sair")
-    botao_sair.pack(anchor="center", pady=10)
+    botao_sair = criarbotao_pLateral(barralateral, sairB, "Sair")
+    botao_sair.grid(row=6)
     botao_sair.configure(command= lambda: tab_switch("sair"))
-    
+
+    espaço2 = ctk.CTkLabel(barralateral, text="\n\n\n\n\n")
+    espaço2.grid(row=7) 
 
     barralateral.configure(width=180)
     botao_config = criarbotao_pLateral(barralateral, configB, "Configurações")
-    botao_config.place(y=530, x=10)
+    botao_config.grid(row=8, pady=10)
     botao_config.configure(command= lambda: tab_switch("config"))
     tab_switch("dados")
 
@@ -109,6 +114,7 @@ def hover_fix(tab, botao, icon):
             botao.unbind('<Leave>')
             botao.configure(fg_color="#FBFBFE", image=icon, text_color="#2B6AD0")
         else:
+            fundocinza.set(tab)
             tkinter.messagebox.showerror(title="Erro", message="Nenhum gráfico encontrado!")
             fundocinza.set(fundocinza.get())
 
@@ -182,34 +188,34 @@ def popupmenu(event):
 # Cria os botões no frame de corantes
 def criar_botao_corantes(cor):
     if cor == "sc":
-        botao = ctk.CTkButton(frame_corantes, corner_radius=10, height=35, width=250, bg_color="#FBFBFE", fg_color="#999999", text="Sem corante", text_color="#FBFBFE", font=fonte, command= lambda a="sc": corante_escolhido(a))
+        botao = ctk.CTkButton(quadro_corantes, corner_radius=10, height=32, width=270, bg_color="#FBFBFE", fg_color="#999999", text="Sem corante", text_color="#FBFBFE", font=fonte, command= lambda a="sc": corante_escolhido(a))
     elif cor == "ttc":
-        botao = ctk.CTkButton(frame_corantes, corner_radius=10, height=35, width=250, bg_color="#FBFBFE", fg_color="#FF6666", text="TTC 480 nm", text_color="#FBFBFE", font=fonte, command= lambda a="ttc": corante_escolhido(a))  
+        botao = ctk.CTkButton(quadro_corantes, corner_radius=10, height=32, width=250, bg_color="#FBFBFE", fg_color="#FF6666", text="TTC 480 nm", text_color="#FBFBFE", font=fonte, command= lambda a="ttc": corante_escolhido(a))  
     elif cor == "res_570":
-        botao = ctk.CTkButton(frame_corantes, corner_radius=10, height=35, width=250, bg_color="#FBFBFE", fg_color="#660099", text="Resazurina 570 nm", text_color="#FBFBFE", font=fonte, command= lambda a="res_570": corante_escolhido(a))
+        botao = ctk.CTkButton(quadro_corantes, corner_radius=10, height=32, width=250, bg_color="#FBFBFE", fg_color="#660099", text="Resazurina 570 nm", text_color="#FBFBFE", font=fonte, command= lambda a="res_570": corante_escolhido(a))
     elif cor == "res_600":
-        botao = ctk.CTkButton(frame_corantes, corner_radius=10, height=35, width=250, bg_color="#FBFBFE", fg_color="#6900EF", text="Resazurina 600 nm", font = fonte, text_color="#FBFBFE", command= lambda a="res_600": corante_escolhido(a))   
+        botao = ctk.CTkButton(quadro_corantes, corner_radius=10, height=32, width=250, bg_color="#FBFBFE", fg_color="#6900EF", text="Resazurina 600 nm", font = fonte, text_color="#FBFBFE", command= lambda a="res_600": corante_escolhido(a))   
     elif cor == "am":
-        botao = ctk.CTkButton(frame_corantes, corner_radius=10, height=35, width=250, bg_color="#FBFBFE", fg_color="#64B1FF", text="Azul de Metileno 600 nm", font = fonte, text_color="#FBFBFE", command= lambda a="am": corante_escolhido(a))
+        botao = ctk.CTkButton(quadro_corantes, corner_radius=10, height=32, width=250, bg_color="#FBFBFE", fg_color="#64B1FF", text="Azul de Metileno 600 nm", font = fonte, text_color="#FBFBFE", command= lambda a="am": corante_escolhido(a))
     return botao     
 
 def frame_corantes():
-    global frame_corantes
-    frame_corantes = ctk.CTkFrame(janela_dados, height=198, width=300, fg_color="#FBFBFE", bg_color="#E3E7F1", corner_radius=16)
-    frame_corantes.pack(anchor="ne", padx= 50)
-    frame_corantes.propagate(False)
+    global quadro_corantes
+    quadro_corantes = ctk.CTkFrame(janela_dados, height=198, width=300, fg_color="#FBFBFE", bg_color="#E3E7F1", corner_radius=16)
+    quadro_corantes.pack(anchor="ne", padx= 50)
+    quadro_corantes.grid_propagate(False)
     botao_sc = criar_botao_corantes("sc")
-    botao_sc.pack(in_= frame_corantes ,expand="True")
+    botao_sc.grid(row=0 , column=0)
     botao_ttc = criar_botao_corantes("ttc")
-    botao_ttc.pack(in_= frame_corantes ,expand="True")
+    botao_ttc.grid(row=1 , column=0)
     botao_res = criar_botao_corantes("res_570")
-    botao_res.pack(in_= frame_corantes ,expand="True")
+    botao_res.grid(row=2 , column=0)
     botao_res2 = criar_botao_corantes("res_600")
-    botao_res2.pack(in_= frame_corantes ,expand="True")
+    botao_res2.grid(row=3 , column=0)
     botao_am = criar_botao_corantes("am")
-    botao_am.pack(in_= frame_corantes , expand="True")
-    botao_pv = ctk.CTkButton(frame_corantes, corner_radius=10, height=35, width=250, bg_color="#FBFBFE", fg_color="#54546B", hover=False, text="Poço vazio/Resetar", text_color="#FBFBFE", font=fonte, command= lambda a="pv": corante_escolhido(a))
-    botao_pv.pack(in_= frame_corantes , expand="True")
+    botao_am.grid(row=4 , column=0)
+    botao_pv = ctk.CTkButton(quadro_corantes, corner_radius=10, height=32, width=250, bg_color="#FBFBFE", fg_color="#54546B", hover=False, text="Poço vazio/Resetar", text_color="#FBFBFE", font=fonte, command= lambda a="pv": corante_escolhido(a))
+    botao_pv.grid(row=5 , column=0)
 
 def corante_escolhido(a):
     try:
@@ -449,30 +455,30 @@ def escolha_bac():
         except NameError:
             outra_bac.configure(state="disabled")
             outrabac_toplevel = ctk.CTkToplevel()
-            outrabac_toplevel.focus()
             outrabac_toplevel.geometry("900x350+450+190")
             outrabac_toplevel.title("Configurar bactéria")
             outrabac_toplevel.resizable(False,False)
-            outrabac_toplevel.after(50, outrabac_toplevel.lift)
+            outrabac_toplevel.after(200, outrabac_toplevel.lift)
             outrabac_toplevel.after(200, lambda: outrabac_toplevel.iconbitmap("ícones\logos\icone_programa.ico"))
 
             # Strings / Entrada do nome da bactéria
-            titulo = ctk.CTkLabel(outrabac_toplevel, text="Configurar bactéria utilizada\n――――――――――――――――――――――――――――", justify="left", font=ctk.CTkFont(family="Segoe UI", size=30), text_color="#2B6AD0").pack(anchor="w", padx=20, pady=7)
+            titulo = ctk.CTkLabel(outrabac_toplevel, text="Configurar bactéria utilizada\n――――――――――――――――――――――――――――", justify="left", font=ctk.CTkFont(family="Segoe UI", size=30), text_color="#2B6AD0")
+            titulo.grid(row=0, column=0,pady=5, padx=15)
             nome_bac = ctk.CTkEntry(outrabac_toplevel, placeholder_text="Digite o nome da bactéria utilizada", width=500, height= 40, font=ctk.CTkFont(family="Segoe UI", size=16))
-            nome_bac.pack(anchor="w", pady=5, padx=20)
+            nome_bac.grid(row=1,column=0, sticky="nw", padx=15)
             desc = ctk.CTkLabel(outrabac_toplevel, text="• Introduza abaixo os 10 valores de diluição do antibiótico, iniciando pela concentração mais alta e seguindo\npara as menores.", justify="left", font=ctk.CTkFont(family="Segoe UI", size=17), text_color="#2B6AD0")
-            desc.pack(anchor="w", padx=20, pady=9)
+            desc.grid(row=3, column=0, sticky="nw", padx=15,pady= 10)
             desc2 = ctk.CTkLabel(outrabac_toplevel, text="Exemplo: Diluição de Ciprofloxacino em Staphylococcus aureus: 8 → 4 → 2 → 1 → 0,5 → 0,25 → 0,125 → 0,06 → 0,03 → 0,02", justify="left", font=ctk.CTkFont(family="Segoe UI", size=15), text_color="black")
-            desc2.place(x=20, y=200)
+            desc2.grid(row=4, padx=0)
         
             # Tabela de entrada dos valores de diluição
             tabela_diluicoes = Sheet(outrabac_toplevel, show_header=False, show_top_left=False, row_index=["Concentração\nde antibiótico (µg)"], header_align="center", headers=["Diluições"], align="center", width=900, row_index_width=125, height=43, total_columns=10, total_rows=1, row_height=40, column_width=77, show_x_scrollbar=False, show_y_scrollbar=False, empty_horizontal=0, empty_vertical=0)
             Sheet.set_options(tabela_diluicoes, max_column_width=77, index_selected_cells_bg="#2B6AD0", index_selected_cells_fg="#FFFFFF", header_selected_cells_bg="#2B6AD0",header_selected_cells_fg="#FFFFFF", table_bg="#E3E7F1", table_grid_fg="#FFFFFF", table_selected_cells_bg="#C6CAD1", index_bg="#2B6AD0", index_grid_fg="#FFFFFF", header_bg="#2B6AD0", header_grid_fg="#FFFFFF", font=('Helvetica', 10, 'normal'), table_fg='#000000', index_fg='#E3E7F1', header_fg='#E3E7F1', table_selected_cells_border_fg="#2B6AD0", table_selected_rows_border_fg ="#2B6AD0", table_selected_columns_border_fg= "#2B6AD0")
             tabela_diluicoes.enable_bindings("all")
             tabela_diluicoes.disable_bindings("column_height_resize", "column_width_resize", "row_width_resize", "row_height_resize")
-            tabela_diluicoes.place(y=240)
+            tabela_diluicoes.grid(row=5, pady=20, sticky="nsew")
             botao_cofirmar = ctk.CTkButton(outrabac_toplevel, cursor='hand2', width=170, height=40, hover=False, font=ctk.CTkFont(family="Segoe UI", size=17, weight='bold'), text="Confirmar", fg_color="#2B6AD0", corner_radius=10, command = confirmar_bac)
-            botao_cofirmar.place(x=340, y=295)
+            botao_cofirmar.grid(row=6, padx=60)
             outrabac_toplevel.protocol("WM_DELETE_WINDOW", lambda : outra_bac.configure(state='normal') or outrabac_toplevel.withdraw())
 
 def confirmar_bac():
@@ -503,20 +509,21 @@ def calculos():
 
 # Cria o back-end do gráfico antecipadamente, possibilitando a atualização do mesmo ao gerar novos gráficos
 def criar_grafico():
-    global ax, grafico1, canvas, fonte_graf
+    global ax, grafico1, canvas, fonte_graf, fonte_tit
     plt.ion()
     plt.pause(0.005)
-    fonte_graf = {'family':'Segoe UI','color':'black','size':10, 'weight':"semibold"}
-    grafico1 = plt.figure(figsize=(10, 5), facecolor="#FFFFFF", edgecolor="#FFFFFF", num=1, clear=True)
-    grafico1.tight_layout()
+    fonte_graf = {'family':'Segoe UI','color':'black','size':12, 'weight':"semibold"}
+    fonte_tit = {'family':'Segoe UI','color':'black','size':16, 'weight':"semibold"}
+    grafico1 = plt.figure(figsize=(10.2, 5), facecolor="#FFFFFF", edgecolor="#FFFFFF", num=1, clear=True)
     canvas = FigureCanvasTkAgg(master= molduragraf, figure=grafico1)
-    canvas.get_tk_widget().pack()
+    canvas.get_tk_widget().grid(row=0, column=0, sticky="nsew")
     ax = grafico1.subplots()
-    mplcursors.cursor(grafico1)
+    grafico1.tight_layout(pad=3.4)
+    cursor(grafico1)
     plt.close()
 
 def gerar_grafico(bac):
-    global dil_saureus
+    global dil_saureus, titulo, legenda
     try:
         ax.cla()
     except NameError:
@@ -535,11 +542,11 @@ def gerar_grafico(bac):
         funcaobac(dil_outrabac)
     plt.pause(0.05)
     canvas.draw()
-    mplcursors.cursor(grafico1, hover=2)
-    ax.legend(loc=("upper left"))
+    cursor(grafico1, hover=2)
+    legenda = ax.legend(loc=("upper left"))
     ax.set_ylabel("Inibição bacteriana (%)", fontdict=fonte_graf)
     ax.set_xlabel("Concentração de antibiótico (μL)", fontdict=fonte_graf)
-
+    titulo = ax.set_title("Concentração de antibiótico x Inibição bacteriana", fontdict=fonte_tit)
 
 def funcao_anotacoes(dil, corante, cor):
     if corante != "res":
@@ -551,7 +558,7 @@ def funcao_anotacoes(dil, corante, cor):
             ann = ax.annotate(text= str(y), xy=(x, y), )
             annotations.append(ann)
 
-def grid():
+def grid_grafico():
     if var_grid.get() == "On":
         ax.grid(visible=True)
         canvas.draw()
@@ -565,6 +572,18 @@ def valores_grafico():
     else:
         for valor in annotations:
             valor.set_visible(False)
+
+def titulo_grafico(state):
+    if state == 'show':
+        if var_titulo.get() == "On":
+            titulo.set_visible(True)
+        else:
+            titulo.set_visible(False)
+    if state == "legenda":
+        if var_legenda.get() == "On":
+            legenda.set_visible(True)
+        else:
+            legenda.set_visible(False)
 
 def funcaobac(diluicao):
     if len(resultados_medias["sc"]) == 12:
@@ -656,23 +675,34 @@ def scrollwheel(event):
     return 'break'
     
 def janelagrafico():
-    global molduragraf, salvarcomo2, var_grid, var_valores
-    molduragraf = ctk.CTkFrame(janela_grafico, height=410, width=1050, fg_color="#FFFFFF", corner_radius=16)
-    molduragraf.place(x=25, y=115)
-    molduragraf.pack_propagate("False")
-    molduraopcoes = ctk.CTkFrame(janela_grafico, height=100, width=650, fg_color="#FFFFFF", corner_radius=16)
-    molduraopcoes.pack(anchor="ne", padx=30)
-    molduraopcoes.pack_propagate(False)
-    salvarcomo = ctk.CTkButton(molduraopcoes, width=170, height=55, corner_radius=10, cursor='hand2', hover=False, text="Salvar como:", font=fonte, fg_color="#2B6AD0", text_color='#FBFBFE')
-    salvarcomo.pack()
-    salvarcomo2 = CTkScrollableDropdown(salvarcomo, values=[".jpg", ".png", ".pdf", ".svg"], font=fontenormal, scrollbar=False, alpha=0.97, height=223, resize=False, image_values=[jpg, png, pdf, svg], fg_color="#FBFBFE", button_color="#C6CAD1", text_color="black", button_height=40, width=160, command= salvargrafico)
-    salvarcomo2.configure(hover_color="#2B6AD0")
+    global molduragraf, salvarcomo2, var_grid, var_valores, var_titulo, var_legenda
     var_grid = ctk.StringVar(value="Off")
     var_valores = ctk.StringVar(value="Off")
-    botao_grid = ctk.CTkCheckBox(molduraopcoes, width=100, height=20, text="Ativar grid", command= lambda: grid(),variable=var_grid, fg_color="#2B6AD0", onvalue="On", offvalue="Off")
-    botao_grid.pack()
-    botao_valores = ctk.CTkCheckBox(molduraopcoes, width=100, height=20, text="Ativar valores", command= lambda: (valores_grafico()),variable=var_valores, fg_color="#2B6AD0", onvalue="On", offvalue="Off")
-    botao_valores.pack()
+    var_titulo = ctk.StringVar(value="On")
+    var_legenda = ctk.StringVar(value="On")
+    molduragraf = ctk.CTkFrame(janela_grafico, height=460, width=1050, fg_color="#FFFFFF", corner_radius=16)
+    molduragraf.place(x=25, y=80)
+    molduragraf.grid_propagate(False)
+    molduragraf.grid_rowconfigure(0, weight=1)
+    molduragraf.grid_columnconfigure(0, weight=1)
+    molduraopcoes = ctk.CTkFrame(janela_grafico, height=70, width=650, fg_color="#FFFFFF", corner_radius=16)
+    molduraopcoes.pack(anchor="ne", padx=30)
+    molduraopcoes.pack_propagate(False)
+    molduraopcoes.grid_propagate(False)
+    molduraopcoes.columnconfigure(2, weight=1)
+    molduraopcoes.rowconfigure([0,1], pad=5)
+    salvarcomo = ctk.CTkButton(molduraopcoes, width=170, height=45, corner_radius=10, cursor='hand2', hover=False, text="Salvar como:", font=fonte, fg_color="#2B6AD0", text_color='#FBFBFE')
+    salvarcomo.grid(column=4, row=0, rowspan=2, sticky="e", padx=10)
+    salvarcomo2 = CTkScrollableDropdown(salvarcomo, values=[".jpg", ".png", ".pdf", ".svg"], font=fontenormal, scrollbar=False, alpha=0.97, height=223, resize=False, image_values=[jpg, png, pdf, svg], fg_color="#FBFBFE", button_color="#C6CAD1", text_color="black", button_height=40, width=160, command= salvargrafico)
+    salvarcomo2.configure(hover_color="#2B6AD0")
+    botao_grid = ctk.CTkCheckBox(molduraopcoes, width=100, height=20, text="Linhas de grade",font=ctk.CTkFont(family="Segoe UI", size=17), command= lambda: grid_grafico(),variable=var_grid, fg_color="#2B6AD0", onvalue="On", offvalue="Off")
+    botao_grid.grid(column=0, row=0, padx=10, sticky="w",pady=5)
+    botao_valores = ctk.CTkCheckBox(molduraopcoes, width=100, height=20, text="Mostrar valores", font=ctk.CTkFont(family="Segoe UI", size=17), command= lambda: valores_grafico(),variable=var_valores, fg_color="#2B6AD0", onvalue="On", offvalue="Off")
+    botao_valores.grid(column=0, row=1, padx=10, sticky="w")
+    botao_titulo = ctk.CTkCheckBox(molduraopcoes, width=100, height=20, text="Mostrar título", font=ctk.CTkFont(family="Segoe UI", size=17), command= lambda: titulo_grafico("show"),variable=var_titulo, fg_color="#2B6AD0", onvalue="On", offvalue="Off")
+    botao_titulo.grid(column=1, row=0, padx=10, sticky="w")
+    botao_legenda = ctk.CTkCheckBox(molduraopcoes, width=100, height=20, text="Mostrar legenda", font=ctk.CTkFont(family="Segoe UI", size=17), command= lambda: titulo_grafico("legenda"),variable=var_legenda, fg_color="#2B6AD0", onvalue="On", offvalue="Off")
+    botao_legenda.grid(column=1, row=1, padx=10, sticky="w")
 
 def salvargrafico(choice):
     if choice == ".jpg":
@@ -706,12 +736,19 @@ def criarbotao_informacoes(texto, comando):
     botao = ctk.CTkButton(moldurabarra, cursor='hand2', width=170, height=50, hover_color="#FBFBFE", font=ctk.CTkFont(family="Segoe UI", size=17, weight='bold'), text=texto, fg_color="#2B6AD0", corner_radius=10, command = comando)
     return botao
 
+def hyperlink(link):
+    if link == "https://github.com/luizreinert/Spectra":
+        open_new(link)
+    if link == "https://doi.org/10.46311/2318-0579.60.eUJ4398":
+        open_new(link)
+
+
 def criartexto(main, texto):
     if texto == strings_txt["sobre"]:
-        textbox = tkinter.Text(main, wrap="word", relief="flat", blockcursor=True, width=86, height=17, font=ctk.CTkFont(family="Segoe UI", size=16), cursor="arrow")
+        textbox = tkinter.Text(main, wrap="word", relief="flat", bg="#FBFBFE", blockcursor=True, width=86, height=17, font=ctk.CTkFont(family="Segoe UI", size=16), cursor="arrow")
         textbox.place(x=15, y=80) 
     else:
-        textbox = tkinter.Text(main, wrap="word", relief="flat", blockcursor=True, width=90, height=17, font=ctk.CTkFont(family="Segoe UI", size=17), cursor="arrow")
+        textbox = tkinter.Text(main, wrap="word", relief="flat", bg="#FBFBFE", blockcursor=True, width=90, height=17, font=ctk.CTkFont(family="Segoe UI", size=17), cursor="arrow")
         textbox.place(x=15, y=110) 
     textbox.insert("0.0", *texto)
     textbox.bindtags((str(textbox), str(textbox), "all"))
@@ -737,16 +774,19 @@ def janelainformacoes():
     botao_sobre.place(x=15, y=120)
     ctk.CTkLabel(sobre, wraplength=840, anchor="center", font=ctk.CTkFont(family="Segoe UI", size=19, weight='bold'),justify="center", text_color="#2B6AD0", text="Este projeto faz parte do trabalho de conclusão de curso em Biomedicina realizado pelo aluno Luiz Henrique Reinert, sob orientação da Prof.ª Dr.ª Katiany Rizzieri Caleffi Ferracioli.").pack(anchor="w", pady=15)
     textbox_sobre = criartexto(sobre, strings_txt["sobre"])
-    
+    botao_hyperlink = ctk.CTkButton(sobre, text="https://doi.org/10.46311/2318-0579.60.eUJ4398", font=ctk.CTkFont(family="Segoe UI", size=17), fg_color="#FBFBFE", hover=False, text_color="blue", command= lambda: hyperlink("https://doi.org/10.46311/2318-0579.60.eUJ4398")).place(x=10, y=164)
+
     botao_codigofonte= criarbotao_informacoes("> Código-fonte", lambda: tab_switch_info("botao_codigofonte"))
     botao_codigofonte.place(x=15, y=200)
     ctk.CTkLabel(codigo_fonte, wraplength=840, font=ctk.CTkFont(family="Segoe UI", size=35, weight='bold'), text_color="#2B6AD0", justify="left", text="Sobre o código fonte\n―――――――――――――――――――――――――――").pack(anchor="nw", pady=15, padx=15)
     textbox_codigo = criartexto(codigo_fonte, strings_txt["codigo_fonte"])
-    
+    botao_hyperlink = ctk.CTkButton(codigo_fonte, text="https://github.com/luizreinert/Spectra", border_color='#FBFBFE', font=ctk.CTkFont(family="Segoe UI", size=17), fg_color="#FBFBFE", hover=False, text_color="blue", command= lambda: hyperlink("https://github.com/luizreinert/Spectra")).place(x=280, y=270)
+
     botao_prereq = criarbotao_informacoes("> Pré-requisitos", lambda: tab_switch_info("pre_requisitos"))
     botao_prereq.place(x=15, y=280)
     ctk.CTkLabel(pre_requisitos, wraplength=840, font=ctk.CTkFont(family="Segoe UI", size=35, weight='bold'), text_color="#2B6AD0", justify="left", text="O que preciso saber antes?\n―――――――――――――――――――――――――――").pack(anchor="nw", pady=15, padx=15)
-    textbox_codigo = criartexto(pre_requisitos, strings_txt["pre_requisitos"])
+    textbox_prereq = criartexto(pre_requisitos, strings_txt["pre_requisitos"])
+    
 
     botao_tutorial = criarbotao_informacoes("> Tutorial", lambda: tab_switch_info("tutorial"))
     botao_tutorial.place(x=15, y=360)
