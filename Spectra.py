@@ -25,7 +25,7 @@ root.geometry("1300x600+450+190")
 root.title("Spectra")
 fonte_icones = ctk.CTkFont(family="Segoe UI", size=17, weight='bold')
 fonte_iconesnormal = ctk.CTkFont(family="Segoe UI", size=14, weight='normal')
-fonte = ctk.CTkFont(family="Segoe UI", size=16, weight='bold')
+fonte = ctk.CTkFont(family="Segoe UI", size=15, weight='bold')
 fontenormal = ctk.CTkFont(family="Segoe UI", size=18)
 fontegrande = ctk.CTkFont(family="Segoe UI", size=22)
 fontetitulos = ctk.CTkFont(family="Segoe UI", size=40, weight='bold')
@@ -51,47 +51,52 @@ svg = ctk.CTkImage(size=[25, 25], light_image=Image.open("assets\svg.png"))
 
 ####* Cria o layout geral da interface gráfica ####
 def layout(): 
-    global barralateral, framebarra, botao_dados, botao_grafico, botao_info, botao_config, botao_sair, fundocinza, janela_dados, janela_grafico, janela_info
+    global barralateral, barralateral, botao_dados, botao_grafico, botao_info, botao_config, botao_sair, fundocinza, janela_dados, janela_grafico, janela_info
     barralateral = ctk.CTkFrame(master=root, width=200, height=600, fg_color="#2B6AD0", bg_color="#2B6AD0")
-    barralateral.pack(fill="y", side= "left")
-    barralateral.pack_propagate(0)
-    framebarra = ctk.CTkFrame(master=barralateral, width=200, height=325, fg_color="transparent")
-    framebarra.pack(fill="none", anchor="center", expand="True")
+    barralateral.grid(row=0, column=0, sticky="nsew")
+    barralateral.grid_propagate(False)
     fundocinza = ctk.CTkTabview(master=root, width=1129, height=600, fg_color="#E3E7F1", state="disabled", anchor="ne", bg_color="#E3E7F1", text_color="#E3E7F1", segmented_button_fg_color="#E3E7F1", segmented_button_unselected_color="#E3E7F1", segmented_button_selected_hover_color="#E3E7F1", segmented_button_unselected_hover_color="#E3E7F1", text_color_disabled="#E3E7F1", segmented_button_selected_color="#E3E7F1")
     fundocinza._outer_button_overhang = 0
     fundocinza._segmented_button.grid_forget()
-    fundocinza._configure_grid()
     janela_dados = fundocinza.add("dados")
     janela_grafico= fundocinza.add("janela_grafico")
     janela_info = fundocinza.add("informacoes")
-    fundocinza.pack(after=barralateral, side= "right")
-    fundocinza.pack_propagate(0)
+    fundocinza.grid(row=0, column=1, sticky="nsew")
+
+    fundocinza.grid_propagate(False)
+    
     imglogo = ctk.CTkLabel(master=barralateral, image=imagemlogo, text="")
-    imglogo.place(x=10, y=20)
-    botao_dados = criarbotao_pLateral(framebarra, tabelaB, "Inserir dados")
-    botao_dados.pack(anchor="center", pady=10)
+    imglogo.grid(row=0, pady=17, padx=10, sticky="n")
+
+    espaço = ctk.CTkLabel(barralateral, text="\n\n\n\n")
+    espaço.grid(row=1)
+
+    botao_dados = criarbotao_pLateral(barralateral, tabelaB, "Inserir dados")
+    botao_dados.grid(row=2, pady=8, padx=13)
     botao_dados.configure(command= lambda: tab_switch("dados"))
 
-    botao_grafico = criarbotao_pLateral(framebarra, graficoB, "Gráfico")
-    botao_grafico.pack(anchor="center", pady=10)
+    botao_grafico = criarbotao_pLateral(barralateral, graficoB, "Gráfico")
+    botao_grafico.grid(row=3, pady=8, padx=13)
     botao_grafico.configure(command= lambda : tab_switch("janela_grafico"))
 
-    botao_info = criarbotao_pLateral(framebarra, infoB, "Informações")
-    botao_info.pack(anchor="center", pady=10)
+    botao_info = criarbotao_pLateral(barralateral, infoB, "Informações")
+    botao_info.grid(row=4, pady=8, padx=13)
     botao_info.configure(command= lambda: tab_switch("informacoes"))
 
-    botao5 = criarbotao_pLateral(framebarra, infoB, "Null")
-    botao5.pack(anchor="center", pady=10)
+    botao5 = criarbotao_pLateral(barralateral, infoB, "Null")
+    botao5.grid(row=5, pady=8, padx=13)
     botao5.configure(state="disabled", command= lambda: tab_switch("informacoes"))
 
-    botao_sair = criarbotao_pLateral(framebarra, sairB, "Sair")
-    botao_sair.pack(anchor="center", pady=10)
+    botao_sair = criarbotao_pLateral(barralateral, sairB, "Sair")
+    botao_sair.grid(row=6)
     botao_sair.configure(command= lambda: tab_switch("sair"))
-    
+
+    espaço2 = ctk.CTkLabel(barralateral, text="\n\n\n\n\n")
+    espaço2.grid(row=7) 
 
     barralateral.configure(width=180)
     botao_config = criarbotao_pLateral(barralateral, configB, "Configurações")
-    botao_config.place(y=530, x=10)
+    botao_config.grid(row=8, pady=10)
     botao_config.configure(command= lambda: tab_switch("config"))
     tab_switch("dados")
 
@@ -102,17 +107,18 @@ def criarbotao_pLateral(root, icon, texto): # Cria os botões de troca de aba na
 #####* Introduz os elementos gráficos da janela de dados #####
 def janeladados(): # Widgets principais (frames, botões, tabela principal)
     global botao_dados, tabela, dados_tabela, valores_apagar, resultados_medias, porcentagens, mediasresazurina
-    moldura = ctk.CTkFrame(janela_dados, height=320, width=1030, fg_color="#FFFFFF", corner_radius=5)
-    moldura.place(x=30, y=220)
-    moldura.propagate(False)
-    tabela = Sheet(moldura, align="center", max_column_width=77, total_columns=12, total_rows=8, column_width=79, height=277, width=980, row_height=32, show_x_scrollbar=False, show_y_scrollbar=False, empty_horizontal=0, empty_vertical=0)
+    moldura = ctk.CTkFrame(janela_dados, height=320, width=1050, fg_color="#FFFFFF", corner_radius=12)
+    moldura.grid(row=3, columnspan=3, sticky="nsew", padx=30, pady=25)
+    moldura.grid_propagate(False)
+    tabela = Sheet(moldura, align="center", max_column_width=77, total_columns=12, total_rows=8, column_width=82, height=300, width=1010, row_height=34, show_x_scrollbar=False, show_y_scrollbar=False, empty_horizontal=0, empty_vertical=0)
     tabela.create_header_dropdown(c = 10, values=["C+", "C-"])
     tabela.create_header_dropdown(c = 11, values=["C-", "C+"])
     Sheet.set_options(tabela, table_bg="#E3E7F1", table_grid_fg="#FFFFFF", table_selected_cells_bg="#C6CAD1", index_bg="#2B6AD0", index_grid_fg="#FFFFFF", header_bg="#2B6AD0", header_grid_fg="#FFFFFF", font=('Helvetica', 10, 'normal'), table_fg='#000000', index_fg='#E3E7F1', header_fg='#E3E7F1', table_selected_cells_border_fg="#2B6AD0", table_selected_rows_border_fg ="#2B6AD0", table_selected_columns_border_fg= "#2B6AD0")
     tabela.enable_bindings("all")
     tabela.disable_bindings("right_click_popup_menu", '<MouseWheel>', "column_height_resize", "column_width_resize", "row_width_resize", "row_height_resize")
     tabela.bind("<3>", popupmenu)
-    tabela.pack(padx=20, pady=20, anchor="nw")
+    tabela.grid(row=0, column=0, sticky="nsew", padx=20, pady= 10)
+    tabela.grid_propagate(False)
     frame_corantes()
     frame_meio()
     frame_opcoes()
@@ -126,16 +132,17 @@ def janeladados(): # Widgets principais (frames, botões, tabela principal)
 def frame_opcoes(): # Cria os widgets do frame de opções, relacionado à escolha da bacteria e opção do cálculo de resazurina
     global op_s_aureus, bac_var, botaoresazurina, outra_bac
     titulo_inserirdados = ctk.CTkLabel(janela_dados, text="Inserir dados", font=fontetitulos, text_color="#2B6AD0")
-    titulo_inserirdados.place(y=0, x=33)
-    frame_escolhabac= ctk.CTkFrame(janela_dados, height=120, width=350, fg_color="#FBFBFE", bg_color="#E3E7F1", corner_radius=16)
-    frame_escolhabac.place(y=80, x=33)
-    frame_escolhabac.propagate(False)
+    titulo_inserirdados.grid(row=0, sticky="nw", padx=27)
+    titulo_inserirdados.grid_rowconfigure(0, pad=10)
+    frame_escolhabac= ctk.CTkFrame(janela_dados, height=120, width=260, fg_color="#FBFBFE", bg_color="#E3E7F1", corner_radius=16)
+    frame_escolhabac.grid(rowspan=2,row=1, column=0, sticky="wse", padx=30)
+    frame_escolhabac.grid_propagate(False)
     bac_var= tkinter.StringVar(value="")
-    op_s_aureus= ctk.CTkRadioButton(frame_escolhabac, width=30, height=30, fg_color="#2B6AD0", border_width_checked= 6, text= "Staphylococcus aureus", font=ctk.CTkFont(family="Segoe UI", size=18), text_color="black", command=escolha_bac, variable=bac_var, value="Staphylococcus aureus")
+    op_s_aureus= ctk.CTkRadioButton(frame_escolhabac, width=30, height=30, fg_color="#2B6AD0", border_width_checked= 6, text= "Staphylococcus aureus", font=ctk.CTkFont(family="Segoe UI", size=18), text_color="#1c1d22", command=escolha_bac, variable=bac_var, value="Staphylococcus aureus")
     op_s_aureus.place( x= 10, y= 0)
-    op_e_coli= ctk.CTkRadioButton(frame_escolhabac, width=30, height=30, fg_color="#2B6AD0", border_width_checked= 6, text= "Escherichia coli", font=ctk.CTkFont(family="Segoe UI", size=18), text_color="black", command=escolha_bac, variable=bac_var, value="Escherichia coli")
+    op_e_coli= ctk.CTkRadioButton(frame_escolhabac, width=30, height=30, fg_color="#2B6AD0", border_width_checked= 6, text= "Escherichia coli", font=ctk.CTkFont(family="Segoe UI", size=18), text_color="#1c1d22", command=escolha_bac, variable=bac_var, value="Escherichia coli")
     op_e_coli.place( x= 10, y= 30)
-    outra_bac = ctk.CTkRadioButton(frame_escolhabac, width=30, height=30, fg_color="#2B6AD0", border_width_checked= 6, text= "Outra bactéria", font=ctk.CTkFont(family="Segoe UI", size=18), text_color="black", command= escolha_bac, variable=bac_var, value="Outra bacteria")
+    outra_bac = ctk.CTkRadioButton(frame_escolhabac, width=30, height=30, fg_color="#2B6AD0", border_width_checked= 6, text= "Outra bactéria", font=ctk.CTkFont(family="Segoe UI", size=18), text_color="#1c1d22", command= escolha_bac, variable=bac_var, value="Outra bacteria")
     outra_bac.place( x= 10, y= 60)
     botaoresazurina = ctk.CTkSwitch(frame_escolhabac, switch_height= 15, progress_color="#2B6AD0", switch_width=30, width=40, height=10, text="Cálculo de resazurina", font=ctk.CTkFont(family="Segoe UI", size=18), command= linhas_resazurina, onvalue="on", offvalue="off")
     botaoresazurina.place(x=7, y=90)
@@ -167,7 +174,7 @@ def escolha_bac(): # Define a bactéria escolhida no frame de opções
             nome_bac.pack(anchor="w", pady=5, padx=20)
             desc = ctk.CTkLabel(outrabac_toplevel, text="• Introduza abaixo os 10 valores de diluição do antibiótico, iniciando pela concentração mais alta e seguindo\npara as menores.", justify="left", font=ctk.CTkFont(family="Segoe UI", size=17), text_color="#2B6AD0")
             desc.pack(anchor="w", padx=20, pady=9)
-            desc2 = ctk.CTkLabel(outrabac_toplevel, text="Exemplo: Diluição de Ciprofloxacino em Staphylococcus aureus: 8 → 4 → 2 → 1 → 0,5 → 0,25 → 0,125 → 0,06 → 0,03 → 0,02", justify="left", font=ctk.CTkFont(family="Segoe UI", size=15), text_color="black")
+            desc2 = ctk.CTkLabel(outrabac_toplevel, text="Exemplo: Diluição de Ciprofloxacino em Staphylococcus aureus: 8 → 4 → 2 → 1 → 0,5 → 0,25 → 0,125 → 0,06 → 0,03 → 0,02", justify="left", font=ctk.CTkFont(family="Segoe UI", size=15), text_color="#1c1d22")
             desc2.place(x=20, y=200)
         
             # Tabela de entrada dos valores de diluição
@@ -197,35 +204,36 @@ def linhas_resazurina(): # Função relacionada ao botão "cálculo de resazurin
     if botaoresazurina.get() == "on":
         tabela.sheet_data_dimensions(total_rows=10)
         if scale == 100:
-            tabela.set_all_row_heights(25)
+            tabela.set_all_row_heights(27)
         elif scale == 125:
-            tabela.set_all_row_heights(30)
+            tabela.set_all_row_heights(34)
     if botaoresazurina.get() == "off":    
         tabela.sheet_data_dimensions(total_rows=8)
         if scale == 100:
-            tabela.set_all_row_heights(32)
+            tabela.set_all_row_heights(34)
         elif scale == 125:
-            tabela.set_all_row_heights(37)
+            tabela.set_all_row_heights(43)
 
 
 ## FRAME 2 ##
-def frame_meio(): # Cria o frame do meio, com os botões de inserir os dados, limpar e gerar o gráfico #
+def frame_meio(): # Cria o frame superior, com os botões de inserir os dados, limpar e gerar o gráfico #
     global frame2
-    frame2 = ctk.CTkFrame(janela_dados, height=198, width=300, fg_color="#FBFBFE", bg_color="#E3E7F1", corner_radius=16)
-    frame2.place(x=422)
-    frame2.propagate(False)
-    botao_inserir= ctk.CTkButton(frame2, width=270, height=55, corner_radius=10, cursor='hand2', text="Colar dados", border_color="#999999", border_width=2, font=fontegrande, fg_color="#FBFBFE", text_color='black', command= lambda : tabela.paste(tabela.select_cell(row=0, column=0)))
-    botao_inserir.pack(pady=6)
-    botao_inserir.bind('<Enter>', lambda e: botao_inserir.configure(text_color="#FBFBFE", fg_color="#2B6AD0"))
-    botao_inserir.bind('<Leave>', lambda e: botao_inserir.configure(text_color="black", fg_color="#FBFBFE"))
-    botao_limpar= ctk.CTkButton(frame2, width=270, height=55, corner_radius=10, cursor='hand2', hover_color="#2B6AD0", border_color="#999999", border_width=2, text="Limpar tabela", font=fontegrande, fg_color="#FBFBFE", text_color='black', command= limpar)
-    botao_limpar.pack(pady=6)
-    botao_limpar.bind('<Enter>', lambda e: botao_limpar.configure(text_color="#FBFBFE", fg_color="#2B6AD0"))
-    botao_limpar.bind('<Leave>', lambda e: botao_limpar.configure(text_color="black", fg_color="#FBFBFE"))
-    botao_gerardados= ctk.CTkButton(frame2, width=270, height=55, corner_radius=10, cursor='hand2', hover_color="#2B6AD0", border_color="#999999", border_width=2, text="Gerar gráfico", font=fontegrande, fg_color="#FBFBFE", text_color='black', command= verificar_dados)
-    botao_gerardados.pack(pady=6)
-    botao_gerardados.bind('<Enter>', lambda e: botao_gerardados.configure(text_color="#FBFBFE", fg_color="#2B6AD0"))
-    botao_gerardados.bind('<Leave>', lambda e: botao_gerardados.configure(text_color="black", fg_color="#FBFBFE"))
+    frame2 = ctk.CTkFrame(janela_dados, height=55, width=610, fg_color="#FBFBFE", bg_color="#E3E7F1", corner_radius=13)
+    frame2.grid(row=1, column=1, sticky="new")
+    frame2.rowconfigure(0, pad=10)
+    frame2.grid_propagate(False)
+    botao_inserir= ctk.CTkButton(frame2, width=215, height=45, corner_radius=10, cursor='hand2',hover=False, text="Colar dados", border_color="#999999", border_width=0, font=fontegrande, fg_color="#FBFBFE", text_color="#1c1d22", command= lambda : tabela.paste(tabela.select_cell(row=0, column=0)))
+    botao_inserir.grid(row=0, column=0, padx=15)
+    botao_inserir.bind('<Enter>', lambda e: botao_inserir.configure(text_color="#2B6AD0", fg_color="#e8effd"))
+    botao_inserir.bind('<Leave>', lambda e: botao_inserir.configure(text_color="#1c1d22", fg_color="#FBFBFE"))
+    botao_limpar= ctk.CTkButton(frame2, width=215, height=45, corner_radius=10, cursor='hand2',hover=False, border_color="#999999", border_width=0, text="Limpar tabela", font=fontegrande, fg_color="#FBFBFE", text_color="#1c1d22", command= limpar)
+    botao_limpar.grid(row=0, column=1, padx=10)
+    botao_limpar.bind('<Enter>', lambda e: botao_limpar.configure(text_color="#2B6AD0", fg_color="#e8effd"))
+    botao_limpar.bind('<Leave>', lambda e: botao_limpar.configure(text_color="#1c1d22", fg_color="#FBFBFE"))
+    botao_gerardados= ctk.CTkButton(frame2, width=215, height=45, corner_radius=10, cursor='hand2',hover=False, border_color="#999999", border_width=0, text="Gerar gráfico", font=fontegrande, fg_color="#FBFBFE", text_color="#1c1d22", command= verificar_dados)
+    botao_gerardados.grid(row=0, column=2, padx=10)
+    botao_gerardados.bind('<Enter>', lambda e: botao_gerardados.configure(text_color="#2B6AD0", fg_color="#e8effd"))
+    botao_gerardados.bind('<Leave>', lambda e: botao_gerardados.configure(text_color="#1c1d22", fg_color="#FBFBFE"))
 
 def limpar(): # Limpa os dados da tabela #
     del dados_tabela["am"][:], dados_tabela["sc"][:], dados_tabela["ttc"][:], dados_tabela["res_570"][:], dados_tabela["res_600"][:]
@@ -235,63 +243,51 @@ def limpar(): # Limpa os dados da tabela #
     tabela.set_sheet_data(data=([]), redraw=False, reset_col_positions=False, reset_row_positions=False, reset_highlights=True)
     tabela.refresh
 
-def gerar_grafico(bac): # Gera o gráfico ou atualiza um gráfico pré-existente com novos dados #
-    global dil_saureus, titulo, legenda
-    try:
-        ax.cla()
-    except NameError:
-        pass
-    dil_saureus = ["0.02", "0.03", "0.06", "0.125", "0.25", "0.5", "1.0", "2.0", "4.0", "8.0"]
-    dil_ecoli = ["0.0005", "0.001", "0.002", "0.004", "0.008", "0.016", "0.032", "0.064", "0.128", "0.256"]
-    try:
-        dil_outrabac = tabela_diluicoes.get_row_data(r=0)
-    except NameError:
-        pass
-    if bac == "Staphylococcus aureus":
-        plotar_gráfico(dil_saureus)
-    if bac == "Escherichia coli":
-        plotar_gráfico(dil_ecoli)
-    if bac =="Outra bacteria":
-        plotar_gráfico(dil_outrabac)
-    plt.pause(0.05)
-    canvas.draw()
-    cursor(grafico1, hover=2)
-    legenda = ax.legend(loc=("upper left"))
-    ax.set_ylabel("Inibição bacteriana (%)", fontdict=fonte_graf)
-    ax.set_xlabel("Concentração de antibiótico (μL)", fontdict=fonte_graf)
-    titulo = ax.set_title("Concentração de antibiótico x Inibição bacteriana", fontdict=fonte_tit)
-
-
 ## FRAME 3 ##
 def frame_corantes(): # Cria o frame dos corantes, incorporando os botões referentes aos corantes.
     global quadro_corantes
-    quadro_corantes = ctk.CTkFrame(janela_dados, height=198, width=300, fg_color="#FBFBFE", bg_color="#E3E7F1", corner_radius=16)
-    quadro_corantes.pack(anchor="ne", padx= 50)
+    quadro_corantes = ctk.CTkFrame(janela_dados, height=58, width=690, fg_color="#E3E7F1", bg_color="#E3E7F1", corner_radius=13)
+    quadro_corantes.grid(row=2, column=1, sticky="sew")
+    quadro_corantes.rowconfigure(0, pad=8)
     quadro_corantes.grid_propagate(False)
     botao_sc = criar_botao_corantes("sc")
-    botao_sc.grid(row=0 , column=0)
+    botao_sc.grid(row=0 , column=0, padx=10, pady=2)
     botao_ttc = criar_botao_corantes("ttc")
-    botao_ttc.grid(row=1 , column=0)
+    botao_ttc.grid(row=0, column=1, padx=5, pady=2)
     botao_res = criar_botao_corantes("res_570")
-    botao_res.grid(row=2 , column=0)
+    botao_res.grid(row=0 , column=2, padx=5, pady=2)
     botao_res2 = criar_botao_corantes("res_600")
-    botao_res2.grid(row=3 , column=0)
+    botao_res2.grid(row=0 , column=3, padx=5, pady=2)
     botao_am = criar_botao_corantes("am")
-    botao_am.grid(row=4 , column=0)
-    botao_pv = ctk.CTkButton(quadro_corantes, corner_radius=10, height=32, width=250, bg_color="#FBFBFE", fg_color="#54546B", hover=False, text="Poço vazio/Resetar", text_color="#FBFBFE", font=fonte, command= lambda a="pv": corante_escolhido(a))
-    botao_pv.grid(row=5 , column=0)
+    botao_am.grid(row=0 , column=4, padx=5, pady=2)
+    botao_pv = criar_botao_corantes("pv")
+    botao_pv.grid(row=0 , column=5, padx=5, pady=2)
 
 def criar_botao_corantes(cor): # Cria os botões dos corantes
     if cor == "sc":
-        botao = ctk.CTkButton(quadro_corantes, corner_radius=10, height=32, width=270, bg_color="#FBFBFE", fg_color="#999999", text="Sem corante", text_color="#FBFBFE", font=fonte, command= lambda a="sc": corante_escolhido(a))
+        botao = ctk.CTkButton(quadro_corantes, corner_radius=10, height=32, width=100, border_color="#999999", hover=False, text_color="#1c1d22", border_width=0, fg_color="#FBFBFE", text="Sem\ncorante", font=fonte, command= lambda a="sc": corante_escolhido(a))
+        botao.bind('<Enter>', lambda e: botao.configure(text_color="#FBFBFE", fg_color="#999999"))
+        botao.bind('<Leave>', lambda e: botao.configure(text_color="#1c1d22", fg_color="#FBFBFE"))
     elif cor == "ttc":
-        botao = ctk.CTkButton(quadro_corantes, corner_radius=10, height=32, width=250, bg_color="#FBFBFE", fg_color="#FF6666", text="TTC 480 nm", text_color="#FBFBFE", font=fonte, command= lambda a="ttc": corante_escolhido(a))  
+        botao = ctk.CTkButton(quadro_corantes, corner_radius=10, height=32, width=100, border_color="#999999", hover=False, text_color="#1c1d22", border_width=0, fg_color="#FBFBFE", text="TTC\n480nm", font=fonte, command= lambda a="ttc": corante_escolhido(a))  
+        botao.bind('<Enter>', lambda e: botao.configure(text_color="#FBFBFE", fg_color="#FF6666"))
+        botao.bind('<Leave>', lambda e: botao.configure(text_color="#1c1d22", fg_color="#FBFBFE"))
     elif cor == "res_570":
-        botao = ctk.CTkButton(quadro_corantes, corner_radius=10, height=32, width=250, bg_color="#FBFBFE", fg_color="#660099", text="Resazurina 570 nm", text_color="#FBFBFE", font=fonte, command= lambda a="res_570": corante_escolhido(a))
+        botao = ctk.CTkButton(quadro_corantes, corner_radius=10, height=32, width=100, border_color="#999999", hover=False, text_color="#1c1d22", border_width=0, fg_color="#FBFBFE", text="Resazurina\n570nm", font=fonte, command= lambda a="res_570": corante_escolhido(a))
+        botao.bind('<Enter>', lambda e: botao.configure(text_color="#FBFBFE", fg_color="#660099"))
+        botao.bind('<Leave>', lambda e: botao.configure(text_color="#1c1d22", fg_color="#FBFBFE"))
     elif cor == "res_600":
-        botao = ctk.CTkButton(quadro_corantes, corner_radius=10, height=32, width=250, bg_color="#FBFBFE", fg_color="#6900EF", text="Resazurina 600 nm", font = fonte, text_color="#FBFBFE", command= lambda a="res_600": corante_escolhido(a))   
+        botao = ctk.CTkButton(quadro_corantes, corner_radius=10, height=32, width=100, border_color="#999999", hover=False, text_color="#1c1d22", border_width=0, fg_color="#FBFBFE", text="Resazurina\n600nm", font = fonte, command= lambda a="res_600": corante_escolhido(a))   
+        botao.bind('<Enter>', lambda e: botao.configure(text_color="#FBFBFE", fg_color="#6900EF"))
+        botao.bind('<Leave>', lambda e: botao.configure(text_color="#1c1d22", fg_color="#FBFBFE"))
     elif cor == "am":
-        botao = ctk.CTkButton(quadro_corantes, corner_radius=10, height=32, width=250, bg_color="#FBFBFE", fg_color="#64B1FF", text="Azul de Metileno 600 nm", font = fonte, text_color="#FBFBFE", command= lambda a="am": corante_escolhido(a))
+        botao = ctk.CTkButton(quadro_corantes, corner_radius=10, height=32, width=100, border_color="#999999", hover=False, text_color="#1c1d22", border_width=0, fg_color="#FBFBFE", text="Azul de Metileno\n600nm", font = fonte, command= lambda a="am": corante_escolhido(a))
+        botao.bind('<Enter>', lambda e: botao.configure(text_color="#FBFBFE", fg_color="#64B1FF"))
+        botao.bind('<Leave>', lambda e: botao.configure(text_color="#1c1d22", fg_color="#FBFBFE"))
+    elif cor == "pv":
+        botao = ctk.CTkButton(quadro_corantes, corner_radius=10, height=32, width=100, border_color="#54546B", hover=False, text_color="#1c1d22", border_width=0, fg_color="#FBFBFE", text="Poço vazio\nResetar", font = fonte, command= lambda a="am": corante_escolhido(a))
+        botao.bind('<Enter>', lambda e: botao.configure(text_color="#FBFBFE", fg_color="#54546B"))
+        botao.bind('<Leave>', lambda e: botao.configure(text_color="#1c1d22", fg_color="#FBFBFE"))
     return botao     
 
 def corante_escolhido(a): # Função vinculada ao botão dos corantes. Permite a entrada de valores decimais com vírgula ou ponto, muda a cor das células referente ao corante, calcula a média das duplicatas, etc.
@@ -553,8 +549,6 @@ def cálculos(cor): # Realiza os cálculos principais, utilizando as médias dos
             resultado_lim = round(resultado, 2)
             porcentagens["am"].append(resultado_lim)
 
-
-
 #####* Introduz os elementos gráficos da janela do gráfico #####
     
 def janelagrafico():  # Widgets principais (frames, botões)
@@ -563,27 +557,37 @@ def janelagrafico():  # Widgets principais (frames, botões)
     var_valores = ctk.StringVar(value="Off")
     var_titulo = ctk.StringVar(value="On")
     var_legenda = ctk.StringVar(value="On")
-    molduragraf = ctk.CTkFrame(janela_grafico, height=460, width=1050, fg_color="#FFFFFF", corner_radius=16)
-    molduragraf.place(x=25, y=80)
-    molduragraf.grid_propagate(False)
-    molduragraf.grid_rowconfigure(0, weight=1)
-    molduragraf.grid_columnconfigure(0, weight=1)
+
+    titulo_janelagrafico = ctk.CTkLabel(janela_grafico, text="Gráfico", font=fontetitulos, text_color="#2B6AD0")
+    titulo_janelagrafico.grid(row=0, column=0, sticky="nw", padx=27)
+    titulo_janelagrafico.grid_rowconfigure(0, pad=10)
+
     molduraopcoes = ctk.CTkFrame(janela_grafico, height=70, width=650, fg_color="#FFFFFF", corner_radius=16)
-    molduraopcoes.pack(anchor="ne", padx=30)
-    molduraopcoes.pack_propagate(False)
+    molduraopcoes.grid(row=0, column=1, sticky="ne", padx=30)
     molduraopcoes.grid_propagate(False)
     molduraopcoes.columnconfigure(2, weight=1)
     molduraopcoes.rowconfigure([0,1], pad=5)
+
+    molduragraf = ctk.CTkFrame(janela_grafico, height=460, width=1050, fg_color="#FFFFFF", corner_radius=16)
+    molduragraf.grid(row=1, column=0, columnspan=2, sticky="nsew", pady=15, padx=30)
+    molduragraf.grid_propagate(False)
+    molduragraf.grid_rowconfigure(0, weight=1)
+    molduragraf.grid_columnconfigure(0, weight=1)
+
     salvarcomo = ctk.CTkButton(molduraopcoes, width=170, height=45, corner_radius=10, cursor='hand2', hover=False, text="Salvar como:", font=fonte, fg_color="#2B6AD0", text_color='#FBFBFE')
     salvarcomo.grid(column=4, row=0, rowspan=2, sticky="e", padx=10)
-    salvarcomo2 = CTkScrollableDropdown(salvarcomo, values=[".jpg", ".png", ".pdf", ".svg"], font=fontenormal, scrollbar=False, alpha=0.97, height=223, resize=False, image_values=[jpg, png, pdf, svg], fg_color="#FBFBFE", button_color="#C6CAD1", text_color="black", button_height=40, width=160, command= salvargrafico)
+    salvarcomo2 = CTkScrollableDropdown(salvarcomo, values=[".jpg", ".png", ".pdf", ".svg"], font=fontenormal, scrollbar=False, alpha=0.97, height=223, resize=False, image_values=[jpg, png, pdf, svg], fg_color="#FBFBFE", button_color="#C6CAD1", text_color="#1c1d22", button_height=40, width=160, command= salvargrafico)
     salvarcomo2.configure(hover_color="#2B6AD0")
+
     botao_grid = ctk.CTkCheckBox(molduraopcoes, width=100, height=20, text="Linhas de grade",font=ctk.CTkFont(family="Segoe UI", size=17), command= lambda: grid_grafico(),variable=var_grid, fg_color="#2B6AD0", onvalue="On", offvalue="Off")
     botao_grid.grid(column=0, row=0, padx=10, sticky="w",pady=5)
+
     botao_valores = ctk.CTkCheckBox(molduraopcoes, width=100, height=20, text="Mostrar valores", font=ctk.CTkFont(family="Segoe UI", size=17), command= lambda: valores_grafico(),variable=var_valores, fg_color="#2B6AD0", onvalue="On", offvalue="Off")
     botao_valores.grid(column=0, row=1, padx=10, sticky="w")
+
     botao_titulo = ctk.CTkCheckBox(molduraopcoes, width=100, height=20, text="Mostrar título", font=ctk.CTkFont(family="Segoe UI", size=17), command= lambda: titulo_grafico("show"),variable=var_titulo, fg_color="#2B6AD0", onvalue="On", offvalue="Off")
     botao_titulo.grid(column=1, row=0, padx=10, sticky="w")
+
     botao_legenda = ctk.CTkCheckBox(molduraopcoes, width=100, height=20, text="Mostrar legenda", font=ctk.CTkFont(family="Segoe UI", size=17), command= lambda: titulo_grafico("legenda"),variable=var_legenda, fg_color="#2B6AD0", onvalue="On", offvalue="Off")
     botao_legenda.grid(column=1, row=1, padx=10, sticky="w")
 
@@ -591,8 +595,8 @@ def criar_grafico(): # Cria o back-end do gráfico antecipadamente, possibilitan
     global ax, grafico1, canvas, fonte_graf, fonte_tit
     plt.ion()
     plt.pause(0.005)
-    fonte_graf = {'family':'Segoe UI','color':'black','size':12, 'weight':"semibold"}
-    fonte_tit = {'family':'Segoe UI','color':'black','size':16, 'weight':"semibold"}
+    fonte_graf = {'family':'Segoe UI','color':"#1c1d22",'size':12, 'weight':"semibold"}
+    fonte_tit = {'family':'Segoe UI','color':"#1c1d22",'size':16, 'weight':"semibold"}
     grafico1 = plt.figure(figsize=(10.2, 5), facecolor="#FFFFFF", edgecolor="#FFFFFF", num=1, clear=True)
     canvas = FigureCanvasTkAgg(master= molduragraf, figure=grafico1)
     canvas.get_tk_widget().grid(row=0, column=0, sticky="nsew")
@@ -600,6 +604,33 @@ def criar_grafico(): # Cria o back-end do gráfico antecipadamente, possibilitan
     grafico1.tight_layout(pad=3.4)
     cursor(grafico1)
     plt.close()
+
+def gerar_grafico(bac): # Gera o gráfico ou atualiza um gráfico pré-existente com novos dados #
+    global dil_saureus, titulo, legenda
+    try:
+        ax.cla()
+    except NameError:
+        pass
+    dil_saureus = ["0.02", "0.03", "0.06", "0.125", "0.25", "0.5", "1.0", "2.0", "4.0", "8.0"]
+    dil_ecoli = ["0.0005", "0.001", "0.002", "0.004", "0.008", "0.016", "0.032", "0.064", "0.128", "0.256"]
+    try:
+        dil_outrabac = tabela_diluicoes.get_row_data(r=0)
+    except NameError:
+        pass
+    if bac == "Staphylococcus aureus":
+        plotar_gráfico(dil_saureus)
+    if bac == "Escherichia coli":
+        plotar_gráfico(dil_ecoli)
+    if bac =="Outra bacteria":
+        plotar_gráfico(dil_outrabac)
+    plt.pause(0.05)
+    canvas.draw()
+    cursor(multiple = True).connect("add", lambda sel: sel.annotation.set(text=annotations))
+    legenda = ax.legend(loc=("upper left"))
+    ax.set_ylabel("Inibição bacteriana (%)", fontdict=fonte_graf)
+    ax.set_xlabel("Concentração de antibiótico (μL)", fontdict=fonte_graf)
+    titulo = ax.set_title("Concentração de antibiótico x Inibição bacteriana", fontdict=fonte_tit)
+
 
 def plotar_gráfico(diluicao): # Introduz as porcentagens de inibição calculadas no eixo X, e a diluição referente à bactéria escolhida no eixo Y #
     if len(resultados_medias["sc"]) == 12:
@@ -690,11 +721,10 @@ def salvargrafico(choice): # Função para salvar o gráfico em formato de arqui
             return
 
 
-
 #####* Introduz os elementos gráficos da janela de informações #####
-        
+                
 def janelainformacoes(): # Widgets principais (frames, botões, janelas de texto) #
-    global moldurabarra, moldurainfo, botao_sobre, botao_codigofonte, botao_tutorial, botao_prereq, botao_hyperlinkcodigo, botao_hyperlinksobre
+    global moldurabarra, moldurainfo, botao_sobre, botao_codigofonte, botao_tutorial, botao_prereq, botao_hyperlinkcodigo, botao_hyperlinksobre, textbox_sobre, textbox_codigo
     moldurabarra = ctk.CTkFrame(janela_info, height= 530, width=1050, fg_color="#2B6AD0", corner_radius=16)
     moldurabarra.place(x=20)
     moldurabarra.pack_propagate(False)
@@ -715,13 +745,13 @@ def janelainformacoes(): # Widgets principais (frames, botões, janelas de texto
     ctk.CTkLabel(sobre, wraplength=840, anchor="center", font=ctk.CTkFont(family="Segoe UI", size=19, weight='bold'),justify="center", text_color="#2B6AD0", text="Este projeto faz parte do trabalho de conclusão de curso em Biomedicina realizado pelo aluno Luiz Henrique Reinert, sob orientação da Prof.ª Dr.ª Katiany Rizzieri Caleffi Ferracioli.").pack(anchor="w", pady=15)
     textbox_sobre = criartexto(sobre, strings_txt["sobre"])
     botao_hyperlinksobre = ctk.CTkButton(sobre, text="https://doi.org/10.46311/2318-0579.60.eUJ4398", font=ctk.CTkFont(family="Segoe UI", size=17), fg_color="#FBFBFE", hover=False, text_color="blue", command= lambda: hyperlink("https://doi.org/10.46311/2318-0579.60.eUJ4398"))
-    
+
     botao_codigofonte= criarbotao_informacoes("> Código-fonte", lambda: tab_switch_info("botao_codigofonte"))
     botao_codigofonte.place(x=15, y=200)
     ctk.CTkLabel(codigo_fonte, wraplength=840, font=ctk.CTkFont(family="Segoe UI", size=35, weight='bold'), text_color="#2B6AD0", justify="left", text="Sobre o código fonte\n―――――――――――――――――――――――――――").pack(anchor="nw", pady=15, padx=15)
     textbox_codigo = criartexto(codigo_fonte, strings_txt["codigo_fonte"])
     botao_hyperlinkcodigo = ctk.CTkButton(codigo_fonte, text="https://github.com/luizreinert/Spectra", border_color='#FBFBFE', font=ctk.CTkFont(family="Segoe UI", size=17), fg_color="#FBFBFE", hover=False, text_color="blue", command= lambda: hyperlink("https://github.com/luizreinert/Spectra"))
-    
+
     if scale == 120:
         botao_hyperlinksobre.place(x=15, y=173)
         botao_hyperlinkcodigo.place(x=285, y=276)
@@ -750,12 +780,12 @@ def criartexto(main, texto): # Cria o texto pré-definido #
     if texto == strings_txt["sobre"]:
         textbox = ctk.CTkTextbox(main, wrap="word", width=800, height=420, font=ctk.CTkFont(family="Segoe UI", size=16), cursor="arrow")
         textbox.place(x=15, y=80) 
-        textbox.unbind('<Motion>')
     else:
         textbox = ctk.CTkTextbox(main, wrap="word", width=800, height=410, font=ctk.CTkFont(family="Segoe UI", size=17), cursor="arrow")
         textbox.place(x=15, y=110) 
     textbox.insert("0.0", *texto)
     textbox.bindtags((str(textbox), str(textbox), "all"))
+    textbox.bind('<Button-1>', text_break())
 
 def hyperlink(link): # Cria o hyperlink ligado aos botões referentes ao link #
     if link == "https://github.com/luizreinert/Spectra":
@@ -834,7 +864,7 @@ def hoverfix_info(tab, botao): # Ajusta o hover dos botões, mantendo a cor do b
     botao.unbind('<Leave>')
     botao.configure(fg_color="#FBFBFE",text_color="#2B6AD0")
 
-def tab_switch_info(botao): #Ajudsta o hover dos botões, mantendo a cor do botão até mudar de aba #
+def tab_switch_info(botao): #Ajusta o hover dos botões, mantendo a cor do botão até mudar de aba #
     if botao == "sobre":
         hoverfix_info("sobre", botao_sobre)
     else:
@@ -862,10 +892,13 @@ def tab_switch_info(botao): #Ajudsta o hover dos botões, mantendo a cor do bot�
 
 def fix_scale(): # Conserta o tamanho da tabela quando a escala do windows é maior (125%) #
     if scale == 125:
-            Sheet.configure(tabela, width=1170, height=325)
-            tabela.set_all_column_widths(95)
-            tabela.set_all_row_heights(37)
+            Sheet.configure(tabela, width=1270, height=370)
+            tabela.set_all_column_widths(103)
+            tabela.set_all_row_heights(43)
 
+def text_break():
+    return "break"
+    
 
 layout()
 janeladados()
