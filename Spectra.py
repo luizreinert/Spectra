@@ -292,7 +292,7 @@ def criar_botao_corantes(cor): # Cria os botões dos corantes
         botao.bind('<Enter>', lambda e: botao.configure(text_color="#FBFBFE", fg_color="#64B1FF"))
         botao.bind('<Leave>', lambda e: botao.configure(text_color="#1c1d22", fg_color="#FBFBFE"))
     elif cor == "pv":
-        botao = ctk.CTkButton(quadro_corantes, corner_radius=10, height=32, width=100, border_color="#54546B", hover=False, text_color="#1c1d22", border_width=0, fg_color="#FBFBFE", text="Poço vazio\nResetar", font = fonte, command= lambda a="am": corante_escolhido(a))
+        botao = ctk.CTkButton(quadro_corantes, corner_radius=10, height=32, width=100, border_color="#54546B", hover=False, text_color="#1c1d22", border_width=0, fg_color="#FBFBFE", text="Poço vazio\nResetar", font = fonte, command= lambda a="pv": corante_escolhido(a))
         botao.bind('<Enter>', lambda e: botao.configure(text_color="#FBFBFE", fg_color="#54546B"))
         botao.bind('<Leave>', lambda e: botao.configure(text_color="#1c1d22", fg_color="#FBFBFE"))
     return botao     
@@ -604,7 +604,7 @@ def janelagrafico():  # Widgets principais (frames, botões)
     botao_config_adc.grid(column=2, row=1, sticky="n")
 
 def config_adicionais():
-    global config_adic, titulo_config
+    global config_adic, titulo_config, label_sc, bt_cor_sc, label_ttc, bt_cor_ttc, label_res570, bt_cor_res570, label_res600, bt_cor_res600, label_am, bt_cor_am
     try:
         if config_adic.winfo_exists() == True:
                 config_adic.deiconify()
@@ -612,7 +612,7 @@ def config_adicionais():
         botao_config_adc.configure(state="disabled")
         config_adic = ctk.CTkToplevel()
         config_adic.focus()
-        config_adic.geometry("450x350+80+190")
+        config_adic.geometry("450x470+80+190")
         config_adic.title("Configurar bactéria")
         config_adic.resizable(False,False)
         config_adic.after(200, config_adic.lift)
@@ -631,20 +631,41 @@ def config_adicionais():
 
         nome_sc= ctk.CTkLabel(config_adic, text= "Sem corante", font=ctk.CTkFont(family="Segoe UI", size=16, weight="bold"))
         nome_sc.grid(row=2, columnspan=2, sticky="w", padx=10)
-        label_sc = ctk.CTkLabel(config_adic, text=str(cores_corantes("sc")), fg_color=cores_corantes("sc"), font=fonte, height= 35, width=120, corner_radius=3, text_color="white")
+        label_sc = ctk.CTkLabel(config_adic, text="#999999", fg_color="#999999", font=fonte, height= 35, width=120, corner_radius=3, text_color="white")
         label_sc.grid(row=2, columnspan=2, stick="e", padx=65)
-        bt_cor_sc = ctk.CTkButton(config_adic, text="", height=40, width=40, corner_radius=3, command= lambda: ask_color("sc"))
+        bt_cor_sc = ctk.CTkButton(config_adic, text="", height=40, width=40, fg_color="#999999", corner_radius=3, hover=False, command= lambda: color_change("sc"))
         bt_cor_sc.grid(row=2, columnspan=2, sticky="e", padx=5, pady=15)
        
         nome_ttc= ctk.CTkLabel(config_adic, text= "TTC", font=ctk.CTkFont(family="Segoe UI", size=16, weight="bold"))
         nome_ttc.grid(row=3, columnspan=2, sticky="w", padx=10)
-        label_ttc = ctk.CTkLabel(config_adic, text=str(cores_corantes("ttc")), fg_color=cores_corantes("ttc"), font=fonte, height= 35, width=120, corner_radius=3, text_color="white")
+        label_ttc = ctk.CTkLabel(config_adic, text="#FF6666", fg_color="#FF6666", font=fonte, height= 35, width=120, corner_radius=3, text_color="white")
         label_ttc.grid(row=3, columnspan=2, stick="e", padx=65)
-        bt_cor_ttc = ctk.CTkButton(config_adic, text="", height=40, width=40, corner_radius=3, fg_color=cores_corantes("ttc"), command= lambda: ask_color("ttc"))
+        bt_cor_ttc = ctk.CTkButton(config_adic, text="", height=40, width=40, corner_radius=3, fg_color="#FF6666", hover=False, command= lambda: color_change("ttc"))
         bt_cor_ttc.grid(row=3, columnspan=2, sticky="e", padx=5, pady=10)
 
+        nome_res570= ctk.CTkLabel(config_adic, text= "Resazurina (570 nm)", font=ctk.CTkFont(family="Segoe UI", size=16, weight="bold"))
+        nome_res570.grid(row=4, columnspan=2, sticky="w", padx=10)
+        label_res570 = ctk.CTkLabel(config_adic, text="#660099", fg_color="#660099", font=fonte, height= 35, width=120, corner_radius=3, text_color="white")
+        label_res570.grid(row=4, columnspan=2, stick="e", padx=65)
+        bt_cor_res570 = ctk.CTkButton(config_adic, text="", height=40, width=40, corner_radius=3, hover=False, fg_color="#660099", command= lambda: color_change("res570"))
+        bt_cor_res570.grid(row=4, columnspan=2, sticky="e", padx=5, pady=10)
+
+        nome_res600= ctk.CTkLabel(config_adic, text= "Resazurina (600 nm)", font=ctk.CTkFont(family="Segoe UI", size=16, weight="bold"))
+        nome_res600.grid(row=5, columnspan=2, sticky="w", padx=10)
+        label_res600 = ctk.CTkLabel(config_adic, text="#6900EF", fg_color="#6900EF", font=fonte, height= 35, width=120, corner_radius=3, text_color="white")
+        label_res600.grid(row=5, columnspan=2, stick="e", padx=65)
+        bt_cor_res600 = ctk.CTkButton(config_adic, text="", height=40, width=40, corner_radius=3, hover=False, fg_color="#6900EF", command= lambda: color_change("res600"))
+        bt_cor_res600.grid(row=5, columnspan=2, sticky="e", padx=5, pady=10)
+
+        nome_am= ctk.CTkLabel(config_adic, text= "Azul de Metileno", font=ctk.CTkFont(family="Segoe UI", size=16, weight="bold"))
+        nome_am.grid(row=6, columnspan=2, sticky="w", padx=10)
+        label_am = ctk.CTkLabel(config_adic, text="#64B1FF", fg_color="#64B1FF", font=fonte, height= 35, width=120, corner_radius=3, text_color="white")
+        label_am.grid(row=6, columnspan=2, stick="e", padx=65)
+        bt_cor_am = ctk.CTkButton(config_adic, text="", height=40, width=40, corner_radius=3, hover=False, fg_color="#64B1FF", command= lambda: color_change("am"))
+        bt_cor_am.grid(row=6, columnspan=2, sticky="e", padx=5, pady=10)
+
         botao_confirmar = ctk.CTkButton(config_adic, cursor='hand2', width=170, height=40, hover=False, font=ctk.CTkFont(family="Segoe UI", size=17, weight='bold'), text="Confirmar", fg_color="#2B6AD0", corner_radius=10, command = confirmar_config_adc)
-        botao_confirmar.grid(row=6, columnspan=2, sticky="nsew")
+        botao_confirmar.grid(row=7, columnspan=2, sticky="nsew")
 
 def ask_color(corante):
     global sc_alt, ttc_alt, res570_alt, res600_alt, am_alt
@@ -663,19 +684,40 @@ def ask_color(corante):
     if corante == "am":
         am_color = AskColor(initial_color="#64B1FF")
         am_alt = am_color.get()
-    
+
+def color_change(corante):
+    ask_color(corante)
+    if corante == "sc":
+        label_sc.configure(fg_color=sc_alt, text=sc_alt)
+        bt_cor_sc.configure(fg_color=sc_alt)
+    if corante == "ttc":
+        label_ttc.configure(fg_color=ttc_alt, text=ttc_alt)
+        bt_cor_ttc.configure(fg_color=ttc_alt)
+    if corante == "res570":
+        label_res570.configure(fg_color=res570_alt, text=res570_alt)
+        bt_cor_res570.configure(fg_color=res570_alt)
+    if corante == "res600":
+        label_res600.configure(fg_color=res600_alt, text=res600_alt)
+        bt_cor_res600.configure(fg_color=res600_alt)
+    if corante == "am":
+        label_am.configure(fg_color=am_alt, text=am_alt)
+        bt_cor_am.configure(fg_color=am_alt)
+
 def confirmar_config_adc():
     global novotitulo
     config_adic.withdraw()
     botao_config_adc.configure(state='normal')
     if len(titulo_config.get()) > 5:
         novotitulo = ax.set_title(titulo_config.get(), fontdict=fonte_tit)
-    if len(gra.selections) > 5:
-        for valor in gra.selections:
-            gra.remove_selection(valor)
-    if len(gra2.selections) > 5:
-        for valor in gra2.selections:
-            gra2.remove_selection(valor)
+    try:
+        if len(gra.selections) > 5:
+            for valor in gra.selections:
+                gra.remove_selection(valor)
+        if len(gra2.selections) > 5:
+            for valor in gra2.selections:
+                gra2.remove_selection(valor)
+    except NameError:
+        pass
     del controle[:]
     gerar_grafico(bac_escolhida)
     plt.pause(0.5)
