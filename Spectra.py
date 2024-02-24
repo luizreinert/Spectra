@@ -616,15 +616,19 @@ def tabela_tabview():
     tabela_valores.disable_bindings("column_height_resize", "<MouseWheel>", "column_width_resize", "row_width_resize", "row_height_resize")
     tabela_valores.place(x=20, y=20)
     if corante == "Sem corante":
+        valores_corantes.configure(segmented_button_selected_color=cores_corantes("sc"), segmented_button_selected_hover_color=cores_corantes("sc"))
         tabela_valores.span("A", transposed=True, header=False).data = diluicao_escolhida
         tabela_valores.span("B", transposed=True, header=False).data = porcentagens["sc"][:-2][::-1]
     if corante == "TTC":
+        valores_corantes.configure(segmented_button_selected_color=cores_corantes("ttc"), segmented_button_selected_hover_color=cores_corantes("ttc"))
         tabela_valores.span("A", transposed=True, header=False).data = diluicao_escolhida
         tabela_valores.span("B", transposed=True, header=False).data = porcentagens["ttc"][:-2][::-1]
     if corante == "Resazurina":
+        valores_corantes.configure(segmented_button_selected_color=cores_corantes("res"), segmented_button_selected_hover_color=cores_corantes("res"))
         tabela_valores.span("A", transposed=True, header=False).data = diluicao_escolhida
         tabela_valores.span("B", transposed=True, header=False).data = mediasresazurina["res"][:-2][::-1]
     if corante == "Azul de Metileno":
+        valores_corantes.configure(segmented_button_selected_color=cores_corantes("am"), segmented_button_selected_hover_color=cores_corantes("am"))
         tabela_valores.span("A", transposed=True, header=False).data = diluicao_escolhida
         tabela_valores.span("B", transposed=True, header=False).data = porcentagens["am"][:-2][::-1]
 
@@ -650,20 +654,16 @@ def toplevel_valores():
         titulo.grid(row=0, sticky="nw", padx=10, pady=5)
         titulo.propagate(False)
 
-        valores_corantes = ctk.CTkTabview(obter_valores, width=300, height=520, command=tabela_tabview)
+        valores_corantes = ctk.CTkTabview(obter_valores, width=300, height=520, text_color="black", fg_color="#ffffff", segmented_button_fg_color="#eeece9", segmented_button_unselected_color="#fbfbfe", segmented_button_unselected_hover_color="#e8effd", command=tabela_tabview)
         valores_corantes.grid(row=2, column=0)
         if len(porcentagens["sc"]) > 1:
             valores_sc = valores_corantes.add("Sem corante")
-            valores_corantes.configure(segmented_button_selected_color=cores_corantes("sc"))
         if len(porcentagens["ttc"]) > 1:    
             valores_ttc = valores_corantes.add("TTC")
-            valores_corantes.configure(segmented_button_selected_color=cores_corantes("ttc"))
         if len(mediasresazurina["res"]) > 1:
             valores_res = valores_corantes.add("Resazurina")
-            valores_corantes.configure(segmented_button_selected_color=cores_corantes("res"))
         if len(porcentagens["am"]) > 1:
             valores_am = valores_corantes.add("Azul de Metileno")
-            valores_corantes.configure(segmented_button_selected_color=cores_corantes("am"))
         tabela_tabview()
         
 
