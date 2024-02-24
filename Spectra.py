@@ -187,7 +187,7 @@ def escolha_bac(): # Define a bactéria escolhida no frame de opções
             tabela_diluicoes = Sheet(outrabac_toplevel, show_header=False, show_top_left=False, row_index=["Concentração\nde antibiótico (µg)"], header_align="center", headers=["Diluições"], align="center", width=900, row_index_width=125, height=43, total_columns=10, total_rows=1, row_height=40, column_width=77, show_x_scrollbar=False, show_y_scrollbar=False, empty_horizontal=0, empty_vertical=0)
             Sheet.set_options(tabela_diluicoes, max_column_width=77, index_selected_cells_bg="#2B6AD0", index_selected_cells_fg="#FFFFFF", header_selected_cells_bg="#2B6AD0",header_selected_cells_fg="#FFFFFF", table_bg="#E3E7F1", table_grid_fg="#FFFFFF", table_selected_cells_bg="#C6CAD1", index_bg="#2B6AD0", index_grid_fg="#FFFFFF", header_bg="#2B6AD0", header_grid_fg="#FFFFFF", font=('Helvetica', 10, 'normal'), table_fg='#000000', index_fg='#E3E7F1', header_fg='#E3E7F1', table_selected_cells_border_fg="#2B6AD0", table_selected_rows_border_fg ="#2B6AD0", table_selected_columns_border_fg= "#2B6AD0")
             tabela_diluicoes.enable_bindings("all")
-            tabela_diluicoes.disable_bindings("column_height_resize", "column_width_resize", "row_width_resize", "row_height_resize")
+            tabela_diluicoes.disable_bindings("column_height_resize", "<MouseWheel>", "column_width_resize", "row_width_resize", "row_height_resize")
             if scale == 100:
                 Sheet.configure(tabela_diluicoes, width=845)
                 Sheet.set_all_column_widths(tabela_diluicoes, 71)
@@ -228,15 +228,15 @@ def frame_meio(): # Cria o frame superior, com os botões de inserir os dados, l
     frame2.grid(row=1, column=1, sticky="new")
     frame2.rowconfigure(0, pad=10)
     frame2.grid_propagate(False)
-    botao_inserir= ctk.CTkButton(frame2, width=215, height=45, corner_radius=10, cursor='hand2',hover=False, text="Colar dados", border_color=cores_corantes("sc"), border_width=0, font=fontegrande, fg_color="#FBFBFE", text_color="#1c1d22", command= lambda : tabela.paste(tabela.select_cell(row=0, column=0)))
+    botao_inserir= ctk.CTkButton(frame2, width=215, height=45, corner_radius=10, cursor='hand2',hover=False, text="Colar dados", border_color="#dadada", border_width=2, font=fontegrande, fg_color="#FBFBFE", text_color="#1c1d22", command= lambda : tabela.paste(tabela.select_cell(row=0, column=0)))
     botao_inserir.grid(row=0, column=0, padx=15)
     botao_inserir.bind('<Enter>', lambda e: botao_inserir.configure(text_color="#2B6AD0", fg_color="#e8effd"))
     botao_inserir.bind('<Leave>', lambda e: botao_inserir.configure(text_color="#1c1d22", fg_color="#FBFBFE"))
-    botao_limpar= ctk.CTkButton(frame2, width=215, height=45, corner_radius=10, cursor='hand2',hover=False, border_color=cores_corantes("sc"), border_width=0, text="Limpar tabela", font=fontegrande, fg_color="#FBFBFE", text_color="#1c1d22", command= limpar)
+    botao_limpar= ctk.CTkButton(frame2, width=215, height=45, corner_radius=10, cursor='hand2',hover=False, border_color="#dadada", border_width=2, text="Limpar tabela", font=fontegrande, fg_color="#FBFBFE", text_color="#1c1d22", command= limpar)
     botao_limpar.grid(row=0, column=1, padx=10)
     botao_limpar.bind('<Enter>', lambda e: botao_limpar.configure(text_color="#2B6AD0", fg_color="#e8effd"))
     botao_limpar.bind('<Leave>', lambda e: botao_limpar.configure(text_color="#1c1d22", fg_color="#FBFBFE"))
-    botao_gerardados= ctk.CTkButton(frame2, width=215, height=45, corner_radius=10, cursor='hand2',hover=False, border_color=cores_corantes("sc"), border_width=0, text="Gerar gráfico", font=fontegrande, fg_color="#FBFBFE", text_color="#1c1d22", command= verificar_dados)
+    botao_gerardados= ctk.CTkButton(frame2, width=215, height=45, corner_radius=10, cursor='hand2',hover=False, border_color="#dadada", border_width=2, text="Gerar gráfico", font=fontegrande, fg_color="#FBFBFE", text_color="#1c1d22", command= verificar_dados)
     botao_gerardados.grid(row=0, column=2, padx=10)
     botao_gerardados.bind('<Enter>', lambda e: botao_gerardados.configure(text_color="#2B6AD0", fg_color="#e8effd"))
     botao_gerardados.bind('<Leave>', lambda e: botao_gerardados.configure(text_color="#1c1d22", fg_color="#FBFBFE"))
@@ -491,7 +491,7 @@ def verificar_dados(): # Induz o cálculo para todos os corantes, verificando se
         cálculos('res')
         cálculos('am')
         gerar_grafico(bac_escolhida)
-    except IndexError:
+    except NameError:
         tkinter.messagebox.showerror(title="Erro", message="Selecione a bactéria utilizada")
 
 def cálculos(cor): # Realiza os cálculos principais, utilizando as médias dos valores obtidos na tabela e os valores dos controles #
@@ -561,17 +561,13 @@ def cálculos(cor): # Realiza os cálculos principais, utilizando as médias dos
 #####* Introduz os elementos gráficos da janela do gráfico #####
     
 def janelagrafico():  # Widgets principais (frames, botões)
-    global molduragraf, salvarcomo2, var_grid, var_valores, var_titulo, var_legenda, botao_config_adc
+    global molduragraf, salvarcomo2, var_grid, var_valores, var_titulo, var_legenda, botao_config_adc, botao_valores
     var_grid = ctk.StringVar(value="Off")
     var_valores = ctk.StringVar(value="Off")
     var_titulo = ctk.StringVar(value="On")
     var_legenda = ctk.StringVar(value="On")
 
-    titulo_janelagrafico = ctk.CTkLabel(janela_grafico, text="Gráfico", font=fontetitulos, text_color="#2B6AD0")
-    titulo_janelagrafico.grid(row=0, column=0, sticky="nw", padx=27)
-    titulo_janelagrafico.grid_rowconfigure(0, pad=10)
-
-    molduraopcoes = ctk.CTkFrame(janela_grafico, height=70, width=650, fg_color="#FFFFFF", corner_radius=16)
+    molduraopcoes = ctk.CTkFrame(janela_grafico, height=70, width=1050, fg_color="#FFFFFF", corner_radius=16)
     molduraopcoes.grid(row=0, column=1, sticky="ne", padx=30)
     molduraopcoes.grid_propagate(False)
     molduraopcoes.columnconfigure(2, weight=1)
@@ -583,132 +579,203 @@ def janelagrafico():  # Widgets principais (frames, botões)
     molduragraf.grid_rowconfigure(0, weight=1)
     molduragraf.grid_columnconfigure(0, weight=1)
 
-    salvarcomo = ctk.CTkButton(molduraopcoes, width=170, height=45, corner_radius=10, cursor='hand2', hover=False, text="Salvar como:", font=fonte, fg_color="#2B6AD0", text_color='#FBFBFE')
+    checkbox_grid = ctk.CTkCheckBox(molduraopcoes, width=100, height=20, text="Linhas de grade",font=ctk.CTkFont(family="Segoe UI", size=17), checkmark_color="#FBFBFE", fg_color="#2B6AD0", hover=False, command= lambda: grid_grafico(),variable=var_grid, onvalue="On", offvalue="Off")
+    checkbox_grid.grid(column=0, row=0, padx=10, sticky="w",pady=5)
+
+    checkbox_valores = ctk.CTkCheckBox(molduraopcoes, width=100, height=20, text="Mostrar valores", font=ctk.CTkFont(family="Segoe UI", size=17), checkmark_color="#FBFBFE", fg_color="#2B6AD0", hover=False, command= lambda: mostrar_valores(),variable=var_valores, onvalue="On", offvalue="Off")
+    checkbox_valores.grid(column=0, row=1, padx=10, sticky="w")
+
+    checkbox_titulo = ctk.CTkCheckBox(molduraopcoes, width=100, height=20, text="Mostrar título", font=ctk.CTkFont(family="Segoe UI", size=17), checkmark_color="#FBFBFE", fg_color="#2B6AD0", hover=False, command= lambda: titulo_grafico("show"),variable=var_titulo, onvalue="On", offvalue="Off")
+    checkbox_titulo.grid(column=1, row=0, padx=10, sticky="w")
+
+    checkbox_legenda = ctk.CTkCheckBox(molduraopcoes, width=100, height=20, text="Mostrar legenda", font=ctk.CTkFont(family="Segoe UI", size=17), checkmark_color="#FBFBFE", fg_color="#2B6AD0", hover=False, command= lambda: titulo_grafico("legenda"),variable=var_legenda, onvalue="On", offvalue="Off")
+    checkbox_legenda.grid(column=1, row=1, padx=10, sticky="w")
+
+    botao_valores = ctk.CTkButton(molduraopcoes,width=215, height=45, corner_radius=10, cursor='hand2',hover=False, text="Obter dados", border_color="#dadada", border_width=2, font=fontenormal, fg_color="#FBFBFE", text_color="#1c1d22", command= toplevel_valores)
+    botao_valores.grid(column=2, row=0, rowspan=2, sticky="e", padx=30)
+    botao_valores.bind('<Enter>', lambda e: botao_valores.configure(text_color="#2B6AD0", fg_color="#e8effd"))
+    botao_valores.bind('<Leave>', lambda e: botao_valores.configure(text_color="#1c1d22", fg_color="#FBFBFE"))
+
+    botao_config_adc = ctk.CTkButton(molduraopcoes,width=215, height=45, corner_radius=10, cursor='hand2',hover=False, text="Configurações", border_color="#dadada", border_width=2, font=fontenormal, fg_color="#FBFBFE", text_color="#1c1d22", command=toplevel_config_adc)
+    botao_config_adc.grid(column=3, row=0, rowspan=2, sticky="e", padx=10)
+    botao_config_adc.bind('<Enter>', lambda e: botao_config_adc.configure(text_color="#2B6AD0", fg_color="#e8effd"))
+    botao_config_adc.bind('<Leave>', lambda e: botao_config_adc.configure(text_color="#1c1d22", fg_color="#FBFBFE"))
+
+    salvarcomo = ctk.CTkButton(molduraopcoes,width=215, height=45, corner_radius=10, cursor='hand2',hover=False, text="Salvar gráfico:", border_color="#dadada", border_width=2, font=fontenormal, fg_color="#FBFBFE", text_color="#1c1d22")
     salvarcomo.grid(column=4, row=0, rowspan=2, sticky="e", padx=10)
-    salvarcomo2 = CTkScrollableDropdown(salvarcomo, values=[".jpg", ".png", ".pdf", ".svg"], font=fontenormal, scrollbar=False, alpha=0.97, height=223, resize=False, image_values=[jpg, png, pdf, svg], fg_color="#FBFBFE", button_color="#C6CAD1", text_color="#1c1d22", button_height=40, width=160, command= salvargrafico)
+    salvarcomo2 = CTkScrollableDropdown(salvarcomo, values=[".jpg", ".png", ".pdf", ".svg"], font=fontenormal, scrollbar=False, alpha=0.97, height=223, resize=False, image_values=[jpg, png, pdf, svg], fg_color="#FBFBFE", button_color="#C6CAD1", text_color="#1c1d22", button_height=40, width=215, command= salvargrafico)
     salvarcomo2.configure(hover_color="#2B6AD0")
+    salvarcomo.bind('<Enter>', lambda e: salvarcomo.configure(text_color="#2B6AD0", fg_color="#e8effd"))
+    salvarcomo.bind('<Leave>', lambda e: salvarcomo.configure(text_color="#1c1d22", fg_color="#FBFBFE"))
 
-    botao_grid = ctk.CTkCheckBox(molduraopcoes, width=100, height=20, text="Linhas de grade",font=ctk.CTkFont(family="Segoe UI", size=17), command= lambda: grid_grafico(),variable=var_grid, fg_color="#2B6AD0", onvalue="On", offvalue="Off")
-    botao_grid.grid(column=0, row=0, padx=10, sticky="w",pady=5)
+def tabela_tabview():
+    corante = valores_corantes.get()
+    tabela_valores = Sheet(valores_corantes.tab(corante), show_row_index=False, show_top_left=False, headers=["Concentração de\nantibiótico (µg/mL)", "Inibição\nbacteriana (%)"], header_height=50, header_align="center", align="center", width=263, row_index_width=125, height=400, total_columns=2, total_rows=10, row_height=35, column_width=130, show_x_scrollbar=False, show_y_scrollbar=False, empty_horizontal=0, empty_vertical=0)
+    Sheet.set_options(tabela_valores, max_column_width=90, index_selected_cells_bg="#2B6AD0", index_selected_cells_fg="#FFFFFF", header_selected_cells_bg="#2B6AD0",header_selected_cells_fg="#FFFFFF", table_bg="#E3E7F1", table_grid_fg="#FFFFFF", table_selected_cells_bg="#C6CAD1", index_bg="#2B6AD0", index_grid_fg="#FFFFFF", header_bg="#2B6AD0", header_grid_fg="#FFFFFF", font=('Helvetica', 10, 'normal'), table_fg='#000000', index_fg='#E3E7F1', header_fg='#E3E7F1', table_selected_cells_border_fg="#2B6AD0", table_selected_rows_border_fg ="#2B6AD0", table_selected_columns_border_fg= "#2B6AD0")
+    tabela_valores.enable_bindings("all")
+    tabela_valores.disable_bindings("column_height_resize", "<MouseWheel>", "column_width_resize", "row_width_resize", "row_height_resize")
+    tabela_valores.place(x=20, y=20)
+    if corante == "Sem corante":
+        tabela_valores.span("A", transposed=True, header=False).data = diluicao_escolhida
+        tabela_valores.span("B", transposed=True, header=False).data = porcentagens["sc"][:-2][::-1]
+    if corante == "TTC":
+        tabela_valores.span("A", transposed=True, header=False).data = diluicao_escolhida
+        tabela_valores.span("B", transposed=True, header=False).data = porcentagens["ttc"][:-2][::-1]
+    if corante == "Resazurina":
+        tabela_valores.span("A", transposed=True, header=False).data = diluicao_escolhida
+        tabela_valores.span("B", transposed=True, header=False).data = mediasresazurina["res"][:-2][::-1]
+    if corante == "Azul de Metileno":
+        tabela_valores.span("A", transposed=True, header=False).data = diluicao_escolhida
+        tabela_valores.span("B", transposed=True, header=False).data = porcentagens["am"][:-2][::-1]
 
-    botao_valores = ctk.CTkCheckBox(molduraopcoes, width=100, height=20, text="Mostrar valores", font=ctk.CTkFont(family="Segoe UI", size=17), command= lambda: mostrar_valores(),variable=var_valores, fg_color="#2B6AD0", onvalue="On", offvalue="Off")
-    botao_valores.grid(column=0, row=1, padx=10, sticky="w")
-
-    botao_titulo = ctk.CTkCheckBox(molduraopcoes, width=100, height=20, text="Mostrar título", font=ctk.CTkFont(family="Segoe UI", size=17), command= lambda: titulo_grafico("show"),variable=var_titulo, fg_color="#2B6AD0", onvalue="On", offvalue="Off")
-    botao_titulo.grid(column=1, row=0, padx=10, sticky="w")
-
-    botao_legenda = ctk.CTkCheckBox(molduraopcoes, width=100, height=20, text="Mostrar legenda", font=ctk.CTkFont(family="Segoe UI", size=17), command= lambda: titulo_grafico("legenda"),variable=var_legenda, fg_color="#2B6AD0", onvalue="On", offvalue="Off")
-    botao_legenda.grid(column=1, row=1, padx=10, sticky="w")
-
-    botao_config_adc = ctk.CTkButton(molduraopcoes, width=110, height=20, corner_radius=10, cursor='hand2', hover=False, text="Configurações", font=fonte, fg_color="#2B6AD0", text_color='#FBFBFE', command=config_adicionais)
-    botao_config_adc.grid(column=2, row=1, sticky="n")
-
-def config_adicionais():
-    global config_adic, titulo_config, label_sc, bt_cor_sc, label_ttc, bt_cor_ttc, label_res570, bt_cor_res570, label_res600, bt_cor_res600, label_am, bt_cor_am
+def toplevel_valores():
+    global valores_corantes, valores_sc, valores_ttc
     try:
-        if config_adic.winfo_exists() == True:
-                config_adic.deiconify()
+        if obter_valores.winfo_exists() == True:
+                obter_valores.deiconify()
+    except (NameError, UnboundLocalError):
+        botao_valores.configure(state="disabled")
+        obter_valores = ctk.CTkToplevel()
+        obter_valores.focus()
+        obter_valores.geometry("300x600+80+190")
+        obter_valores.title("Configurar bactéria")
+        obter_valores.resizable(False, False)
+        obter_valores.after(200, obter_valores.lift)
+        obter_valores.after(200, lambda: obter_valores.iconbitmap("assets\logos\icone_programa.ico"))
+        obter_valores.protocol("WM_DELETE_WINDOW", lambda : botao_valores.configure(state='normal') or obter_valores.withdraw())
+        obter_valores.grid_propagate(False)
+        obter_valores.grid_rowconfigure(0, weight=0)
+
+        titulo = ctk.CTkLabel(obter_valores, text=" Valores do gráfico\n―――――――――――", justify="left", font=ctk.CTkFont(family="Segoe UI", size=25), text_color="#2B6AD0")
+        titulo.grid(row=0, sticky="nw", padx=10, pady=5)
+        titulo.propagate(False)
+
+        valores_corantes = ctk.CTkTabview(obter_valores, width=300, height=520, command=tabela_tabview)
+        valores_corantes.grid(row=2, column=0)
+        if len(porcentagens["sc"]) > 1:
+            valores_sc = valores_corantes.add("Sem corante")
+            valores_corantes.configure(segmented_button_selected_color=cores_corantes("sc"))
+        if len(porcentagens["ttc"]) > 1:    
+            valores_ttc = valores_corantes.add("TTC")
+            valores_corantes.configure(segmented_button_selected_color=cores_corantes("ttc"))
+        if len(mediasresazurina["res"]) > 1:
+            valores_res = valores_corantes.add("Resazurina")
+            valores_corantes.configure(segmented_button_selected_color=cores_corantes("res"))
+        if len(porcentagens["am"]) > 1:
+            valores_am = valores_corantes.add("Azul de Metileno")
+            valores_corantes.configure(segmented_button_selected_color=cores_corantes("am"))
+        tabela_tabview()
+        
+
+def toplevel_config_adc():
+    global config_adc, titulo_config, label_sc, bt_cor_sc, label_ttc, bt_cor_ttc, label_res, bt_cor_res, label_am, bt_cor_am, eixox_config, eixoy_config
+    try:
+        if config_adc.winfo_exists() == True:
+                config_adc.deiconify()
     except NameError:
         botao_config_adc.configure(state="disabled")
-        config_adic = ctk.CTkToplevel()
-        config_adic.focus()
-        config_adic.geometry("450x470+80+190")
-        config_adic.title("Configurar bactéria")
-        config_adic.resizable(False,False)
-        config_adic.after(200, config_adic.lift)
-        config_adic.after(200, lambda: config_adic.iconbitmap("assets\logos\icone_programa.ico"))
-        config_adic.protocol("WM_DELETE_WINDOW", lambda :
-        botao_config_adc.configure(state='normal') or config_adic.withdraw())
-        config_adic.grid_propagate(False)
+        config_adc = ctk.CTkToplevel()
+        config_adc.focus()
+        config_adc.geometry("450x600+80+190")
+        config_adc.title("Configurar bactéria")
+        config_adc.resizable(False, False)
+        config_adc.after(200, config_adc.lift)
+        config_adc.after(200, lambda: config_adc.iconbitmap("assets\logos\icone_programa.ico"))
+        config_adc.protocol("WM_DELETE_WINDOW", lambda : botao_config_adc.configure(state='normal') or config_adc.withdraw())
+        config_adc.grid_propagate(False)
 
-        titulo = ctk.CTkLabel(config_adic, text=" Configurações adicionais\n――――――――――――――", justify="left", font=ctk.CTkFont(family="Segoe UI", size=30), text_color="#2B6AD0")
-        titulo.grid(columnspan=2, column=0, row=0, sticky="nw", padx=10, pady=5)
+        titulo = ctk.CTkLabel(config_adc, text=" Configurações adicionais\n―――――――――――――――――――――――――――――", justify="left", font=ctk.CTkFont(family="Segoe UI", size=30), text_color="#2B6AD0")
+        titulo.grid(columnspan=4, column=0, row=0, sticky="nw", padx=10, pady=5)
+        titulo.propagate(False)
 
-        titulo_config = ctk.CTkEntry(config_adic, placeholder_text="Mudar o título do gráfico", width=300, height= 40, font=ctk.CTkFont(family="Segoe UI", size=16))
-        titulo_config.grid(row=1, column=0, sticky="w", padx=10, pady=5)
-        bt_redefinir = ctk.CTkButton(config_adic, text="Redefinir", cursor='hand2', width=120, height=30, hover=False, font=ctk.CTkFont(family="Segoe UI", size=16, weight='bold'), command= lambda: titulo_config.insert(1, "Concentração de antibiótico x Inibição bacteriana"))
-        bt_redefinir.grid(row=1, column=1, sticky="w", pady=5)
+        label_config_textos =  ctk.CTkLabel(config_adc, text="• Configurar o título do gráfico e eixos X e Y", justify="left", font=ctk.CTkFont(family="Segoe UI", size=17), text_color="#2B6AD0")
+        label_config_textos.grid(row=1, columnspan=2, sticky="nw", padx=10)
 
-        nome_sc= ctk.CTkLabel(config_adic, text= "Sem corante", font=ctk.CTkFont(family="Segoe UI", size=16, weight="bold"))
-        nome_sc.grid(row=2, columnspan=2, sticky="w", padx=10)
-        label_sc = ctk.CTkLabel(config_adic, text="#999999", fg_color="#999999", font=fonte, height= 35, width=120, corner_radius=3, text_color="white")
-        label_sc.grid(row=2, columnspan=2, stick="e", padx=65)
-        bt_cor_sc = ctk.CTkButton(config_adic, text="", height=40, width=40, fg_color="#999999", corner_radius=3, hover=False, command= lambda: color_change("sc"))
-        bt_cor_sc.grid(row=2, columnspan=2, sticky="e", padx=5, pady=15)
+        titulo_config = ctk.CTkEntry(config_adc, placeholder_text="Mudar o título do gráfico", width=330, height= 40, font=ctk.CTkFont(family="Segoe UI", size=16))
+        titulo_config.grid(row=2, columnspan=2, sticky="w", padx=10, pady=5)
+        bt_redefinir = ctk.CTkButton(config_adc, text="Redefinir", cursor='hand2', width=80, height=30, hover=False,fg_color="#2B6AD0", font=ctk.CTkFont(family="Segoe UI", size=16, weight='bold'), command= lambda: redefinir_texto("titulo"))
+        bt_redefinir.grid(row=2, columnspan=2, sticky="e", pady=5, padx=0)
+
+        eixox_config = ctk.CTkEntry(config_adc, placeholder_text="Mudar o eixo X", width=330, height= 40, font=ctk.CTkFont(family="Segoe UI", size=16))
+        eixox_config.grid(row=3, columnspan=2, sticky="w", padx=10, pady=5)
+        bt_redefinir = ctk.CTkButton(config_adc, text="Redefinir", cursor='hand2', width=80, height=30, hover=False,fg_color="#2B6AD0", font=ctk.CTkFont(family="Segoe UI", size=16, weight='bold'), command= lambda: redefinir_texto("eixo_x"))
+        bt_redefinir.grid(row=3, columnspan=2, sticky="e", pady=5, padx=0)
+
+        eixoy_config = ctk.CTkEntry(config_adc, placeholder_text="Mudar o eixo Y", width=330, height= 40, font=ctk.CTkFont(family="Segoe UI", size=16))
+        eixoy_config.grid(row=4, columnspan=2, sticky="w", padx=10, pady=5)
+        bt_redefinir = ctk.CTkButton(config_adc, text="Redefinir", cursor='hand2', width=80, height=30, hover=False,fg_color="#2B6AD0", font=ctk.CTkFont(family="Segoe UI", size=16, weight='bold'), command=  lambda: redefinir_texto("eixo_y"))
+        bt_redefinir.grid(row=4, columnspan=2, sticky="e", pady=15, padx=0)
+        
+        label_config_cores =  ctk.CTkLabel(config_adc, text="• Configurar a cor das linhas e valores do gráfico", justify="left", font=ctk.CTkFont(family="Segoe UI", size=17), text_color="#2B6AD0")
+        label_config_cores.grid(row=5, columnspan=2, sticky="nw", padx=10)
+        nome_sc= ctk.CTkLabel(config_adc, text= "Sem corante", font=ctk.CTkFont(family="Segoe UI", size=16, weight="bold"))
+        nome_sc.grid(row=6, columnspan=2, sticky="w", padx=10)
+        label_sc = ctk.CTkLabel(config_adc, text="#999999", fg_color="#999999", font=fonte, height= 35, width=120, corner_radius=3, text_color="white")
+        label_sc.grid(row=6, columnspan=2, stick="e", padx=65)
+        bt_cor_sc = ctk.CTkButton(config_adc, text="", height=40, width=40, fg_color="#999999", corner_radius=3, hover=False, border_width=2, command= lambda: color_picker("sc"))
+        bt_cor_sc.grid(row=6, columnspan=2, sticky="e", padx=5, pady=10)
        
-        nome_ttc= ctk.CTkLabel(config_adic, text= "TTC", font=ctk.CTkFont(family="Segoe UI", size=16, weight="bold"))
-        nome_ttc.grid(row=3, columnspan=2, sticky="w", padx=10)
-        label_ttc = ctk.CTkLabel(config_adic, text="#FF6666", fg_color="#FF6666", font=fonte, height= 35, width=120, corner_radius=3, text_color="white")
-        label_ttc.grid(row=3, columnspan=2, stick="e", padx=65)
-        bt_cor_ttc = ctk.CTkButton(config_adic, text="", height=40, width=40, corner_radius=3, fg_color="#FF6666", hover=False, command= lambda: color_change("ttc"))
-        bt_cor_ttc.grid(row=3, columnspan=2, sticky="e", padx=5, pady=10)
+        nome_ttc= ctk.CTkLabel(config_adc, text= "TTC", font=ctk.CTkFont(family="Segoe UI", size=16, weight="bold"))
+        nome_ttc.grid(row=7, columnspan=2, sticky="w", padx=10)
+        label_ttc = ctk.CTkLabel(config_adc, text="#FF6666", fg_color="#FF6666", font=fonte, height= 35, width=120, corner_radius=3, text_color="white")
+        label_ttc.grid(row=7, columnspan=2, stick="e", padx=65)
+        bt_cor_ttc = ctk.CTkButton(config_adc, text="", height=40, width=40, corner_radius=3, fg_color="#FF6666", hover=False, border_width=2, command= lambda: color_picker("ttc"))
+        bt_cor_ttc.grid(row=7, columnspan=2, sticky="e", padx=5, pady=10)
 
-        nome_res570= ctk.CTkLabel(config_adic, text= "Resazurina (570 nm)", font=ctk.CTkFont(family="Segoe UI", size=16, weight="bold"))
-        nome_res570.grid(row=4, columnspan=2, sticky="w", padx=10)
-        label_res570 = ctk.CTkLabel(config_adic, text="#660099", fg_color="#660099", font=fonte, height= 35, width=120, corner_radius=3, text_color="white")
-        label_res570.grid(row=4, columnspan=2, stick="e", padx=65)
-        bt_cor_res570 = ctk.CTkButton(config_adic, text="", height=40, width=40, corner_radius=3, hover=False, fg_color="#660099", command= lambda: color_change("res570"))
-        bt_cor_res570.grid(row=4, columnspan=2, sticky="e", padx=5, pady=10)
+        nome_res= ctk.CTkLabel(config_adc, text= "Resazurina", font=ctk.CTkFont(family="Segoe UI", size=16, weight="bold"))
+        nome_res.grid(row=8, columnspan=2, sticky="w", padx=10)
+        label_res = ctk.CTkLabel(config_adc, text="#660099", fg_color="#660099", font=fonte, height= 35, width=120, corner_radius=3, text_color="white")
+        label_res.grid(row=8, columnspan=2, stick="e", padx=65)
+        bt_cor_res = ctk.CTkButton(config_adc, text="", height=40, width=40, corner_radius=3, hover=False, fg_color="#660099", border_width=2, command= lambda: color_picker("res"))
+        bt_cor_res.grid(row=8, columnspan=2, sticky="e", padx=5, pady=10)
 
-        nome_res600= ctk.CTkLabel(config_adic, text= "Resazurina (600 nm)", font=ctk.CTkFont(family="Segoe UI", size=16, weight="bold"))
-        nome_res600.grid(row=5, columnspan=2, sticky="w", padx=10)
-        label_res600 = ctk.CTkLabel(config_adic, text="#6900EF", fg_color="#6900EF", font=fonte, height= 35, width=120, corner_radius=3, text_color="white")
-        label_res600.grid(row=5, columnspan=2, stick="e", padx=65)
-        bt_cor_res600 = ctk.CTkButton(config_adic, text="", height=40, width=40, corner_radius=3, hover=False, fg_color="#6900EF", command= lambda: color_change("res600"))
-        bt_cor_res600.grid(row=5, columnspan=2, sticky="e", padx=5, pady=10)
+        nome_am= ctk.CTkLabel(config_adc, text= "Azul de Metileno", font=ctk.CTkFont(family="Segoe UI", size=16, weight="bold"))
+        nome_am.grid(row=9, columnspan=2, sticky="w", padx=10)
+        label_am = ctk.CTkLabel(config_adc, text="#64B1FF", fg_color="#64B1FF", font=fonte, height= 35, width=120, corner_radius=3, text_color="white")
+        label_am.grid(row=9, columnspan=2, stick="e", padx=65)
+        bt_cor_am = ctk.CTkButton(config_adc, text="", height=40, width=40, corner_radius=3, hover=False, fg_color="#64B1FF", border_width=2, command= lambda: color_picker("am"))
+        bt_cor_am.grid(row=9, columnspan=2, sticky="e", padx=5, pady=15)
 
-        nome_am= ctk.CTkLabel(config_adic, text= "Azul de Metileno", font=ctk.CTkFont(family="Segoe UI", size=16, weight="bold"))
-        nome_am.grid(row=6, columnspan=2, sticky="w", padx=10)
-        label_am = ctk.CTkLabel(config_adic, text="#64B1FF", fg_color="#64B1FF", font=fonte, height= 35, width=120, corner_radius=3, text_color="white")
-        label_am.grid(row=6, columnspan=2, stick="e", padx=65)
-        bt_cor_am = ctk.CTkButton(config_adic, text="", height=40, width=40, corner_radius=3, hover=False, fg_color="#64B1FF", command= lambda: color_change("am"))
-        bt_cor_am.grid(row=6, columnspan=2, sticky="e", padx=5, pady=10)
+        botao_confirmar = ctk.CTkButton(config_adc, cursor='hand2', width=170, height=40, hover=False, font=ctk.CTkFont(family="Segoe UI", size=17, weight='bold'), text="Confirmar", fg_color="#2B6AD0", corner_radius=10, command = confirmar_config_adc)
+        botao_confirmar.place(x=135, y=550)
 
-        botao_confirmar = ctk.CTkButton(config_adic, cursor='hand2', width=170, height=40, hover=False, font=ctk.CTkFont(family="Segoe UI", size=17, weight='bold'), text="Confirmar", fg_color="#2B6AD0", corner_radius=10, command = confirmar_config_adc)
-        botao_confirmar.grid(row=7, columnspan=2, sticky="nsew")
+def redefinir_texto(texto):
+    if texto == "titulo":
+        titulo_config.delete(0, tkinter.END)
+        titulo_config.insert(1, "Concentração de antibiótico x Inibição bacteriana")
+    elif texto == "eixo_x":
+        eixox_config.delete(0, tkinter.END)
+        eixox_config.insert(1, "Concentração de antibiótico (μL)")
+    elif texto == "eixo_y":
+        eixoy_config.delete(0, tkinter.END)
+        eixoy_config.insert(1, "Inibição bacteriana (%)")
+    
 
-def ask_color(corante):
-    global sc_alt, ttc_alt, res570_alt, res600_alt, am_alt
+def color_picker(corante):
+    global colorpicker
+    config_adc.geometry("730x600")
     if corante == "sc":
-        sc_color = AskColor(initial_color="#999999")
-        sc_alt = sc_color.get()
-    if corante == "ttc":
-        ttc_color = AskColor(initial_color="#FF6666")
-        ttc_alt = ttc_color.get()
-    if corante == "res570":
-        res570_color = AskColor(initial_color="#660099")
-        res570_alt = res570_color.get()
-    if corante == "res600":
-        res600_color = AskColor(initial_color="#6900EF")
-        res600_alt = res600_color.get()
-    if corante == "am":
-        am_color = AskColor(initial_color="#64B1FF")
-        am_alt = am_color.get()
-
-def color_change(corante):
-    ask_color(corante)
-    if corante == "sc":
-        label_sc.configure(fg_color=sc_alt, text=sc_alt)
-        bt_cor_sc.configure(fg_color=sc_alt)
-    if corante == "ttc":
-        label_ttc.configure(fg_color=ttc_alt, text=ttc_alt)
-        bt_cor_ttc.configure(fg_color=ttc_alt)
-    if corante == "res570":
-        label_res570.configure(fg_color=res570_alt, text=res570_alt)
-        bt_cor_res570.configure(fg_color=res570_alt)
-    if corante == "res600":
-        label_res600.configure(fg_color=res600_alt, text=res600_alt)
-        bt_cor_res600.configure(fg_color=res600_alt)
-    if corante == "am":
-        label_am.configure(fg_color=am_alt, text=am_alt)
-        bt_cor_am.configure(fg_color=am_alt)
+        colorpicker = CTkColorPicker(config_adc, width=300, orientation="horizontal", initial_color=label_sc.cget("fg_color"), command=lambda e: (label_sc.configure(fg_color=e, text=e), bt_cor_sc.configure(fg_color=e)))
+        colorpicker.grid(row=3, rowspan=6, column=2, columnspan=2, sticky="sw", padx=32)
+    elif corante == "ttc":
+        colorpicker = CTkColorPicker(config_adc, width=300, orientation="horizontal", initial_color=label_ttc.cget("fg_color"),command=lambda e: (label_ttc.configure(fg_color=e, text=e), bt_cor_ttc.configure(fg_color=e)))
+        colorpicker.grid(row=3, rowspan=6, column=2, columnspan=2, sticky="sw", padx=32)  
+    elif corante == "res":
+        colorpicker = CTkColorPicker(config_adc, width=300, orientation="horizontal", initial_color=label_res.cget("fg_color"),command=lambda e: (label_res.configure(fg_color=e, text=e), bt_cor_res.configure(fg_color=e)))
+        colorpicker.grid(row=3, rowspan=6, column=2, columnspan=2, sticky="sw", padx=32)   
+    elif corante == "am":
+        colorpicker = CTkColorPicker(config_adc, width=300, orientation="horizontal", initial_color=label_am.cget("fg_color"),command=lambda e: (label_am.configure(fg_color=e, text=e), bt_cor_am.configure(fg_color=e)))
+        colorpicker.grid(row=3, rowspan=6, column=2, columnspan=2, sticky="sw", padx=32)   
 
 def confirmar_config_adc():
-    global novotitulo
-    config_adic.withdraw()
-    botao_config_adc.configure(state='normal')
-    if len(titulo_config.get()) > 5:
-        novotitulo = ax.set_title(titulo_config.get(), fontdict=fonte_tit)
+    global sc_alt, ttc_alt, res_alt, am_alt
+    botao_config_adc.configure(state="normal")
+    try:
+        colorpicker.destroy()
+    except (NameError, AttributeError):
+        pass
+    config_adc.geometry("450x600")
+    config_adc.withdraw()
     try:
         if len(gra.selections) > 5:
             for valor in gra.selections:
@@ -716,9 +783,19 @@ def confirmar_config_adc():
         if len(gra2.selections) > 5:
             for valor in gra2.selections:
                 gra2.remove_selection(valor)
+        if len(gra3.selections) > 5:
+            for valor in gra3.selections:
+                gra3.remove_selection(valor)      
+        if len(gra4.selections) > 5:
+            for valor in gra4.selections:
+                gra4.remove_selection(valor)
     except NameError:
         pass
     del controle[:]
+    sc_alt = label_sc.cget("fg_color")
+    ttc_alt = label_ttc.cget("fg_color")
+    res_alt = label_res.cget("fg_color")
+    am_alt = label_am.cget("fg_color")
     gerar_grafico(bac_escolhida)
     plt.pause(0.5)
 
@@ -736,7 +813,7 @@ def criar_grafico(): # Cria o back-end do gráfico antecipadamente, possibilitan
     plt.close()
 
 def gerar_grafico(bac): # Gera o gráfico ou atualiza um gráfico pré-existente com novos dados #
-    global dil_saureus, titulografico, legenda, ann_hover
+    global dil_saureus, dil_ecoli, dil_outrabac, titulografico, legenda, ann_hover, diluicao_escolhida
     try:
         ax.cla()
     except NameError:
@@ -748,19 +825,30 @@ def gerar_grafico(bac): # Gera o gráfico ou atualiza um gráfico pré-existente
     except NameError:
         pass
     if bac == "Staphylococcus aureus":
+        diluicao_escolhida = dil_saureus
         plotar_gráfico(dil_saureus)
     if bac == "Escherichia coli":
+        diluicao_escolhida = dil_ecoli
         plotar_gráfico(dil_ecoli)
     if bac =="Outra bacteria":
+        diluicao_escolhida = tabela_diluicoes.get_row_data(r=0)
         plotar_gráfico(dil_outrabac)
     plt.pause(0.05)
     legenda = ax.legend(loc=("upper left"))
-    ax.set_ylabel("Inibição bacteriana (%)", fontdict=fonte_graf)
     try:
         titulografico = ax.set_title(titulo_config.get(), fontdict=fonte_tit)
+        if len(titulo_config.get()) == 0:
+            ax.set_title("Concentração de antibiótico x Inibição bacteriana", fontdict=fonte_tit)
+        eixox = ax.set_xlabel(eixox_config.get(), fontdict= fonte_graf)
+        if len(eixox_config.get()) == 0:
+            ax.set_xlabel("Concentração de antibiótico (μL)", fontdict=fonte_graf)
+        eixoy = ax.set_ylabel(eixoy_config.get(), fontdict= fonte_graf)
+        if len(eixoy_config.get()) == 0:
+            ax.set_ylabel("Inibição bacteriana (%)", fontdict=fonte_graf)
     except NameError:
         titulografico = ax.set_title("Concentração de antibiótico x Inibição bacteriana", fontdict=fonte_tit)
-    ax.set_xlabel("Concentração de antibiótico (μL)", fontdict=fonte_graf)
+        ax.set_xlabel("Concentração de antibiótico (μL)", fontdict=fonte_graf)
+        ax.set_ylabel("Inibição bacteriana (%)", fontdict=fonte_graf)
     ann_hover = mplcursors.cursor(ax, multiple = False, hover=2).connect("add", annotations_config_hover)
 
 def plotar_gráfico(diluicao): # Introduz as porcentagens de inibição calculadas no eixo X, e a diluição referente à bactéria escolhida no eixo Y #
@@ -782,15 +870,18 @@ def plotar_gráfico(diluicao): # Introduz as porcentagens de inibição calculad
     if len(resultados_medias["res_570"]) and len(resultados_medias["res_600"]):
         if len(mediasresazurina["res"]) > 12:
             del mediasresazurina["res"][:-12]
-        ax.plot(diluicao, mediasresazurina["res"][:-2][::-1], color="#660099", label="Resazurina", marker='.')
-        gra3 = mplcursors.cursor(ax, multiple = True).connect("add", annotations_config)
+        ax.plot(diluicao, mediasresazurina["res"][:-2][::-1], color=cores_corantes("res"), label="Resazurina", marker='.')
+        gra3 = mplcursors.cursor(ax, multiple = True)
+        gra3.connect("add", annotations_config)
         valores_grafico("res")
     if len(resultados_medias["am"]) == 12:
         if len(porcentagens["am"]) > 12:
             del porcentagens["am"][:-12]
-        ax.plot(diluicao, porcentagens["am"][:-2][::-1], color="#64B1FF", label="Azul de Metileno", marker='.')
-        gra4 = mplcursors.cursor(ax, multiple = True).connect("add", annotations_config)
+        ax.plot(diluicao, porcentagens["am"][:-2][::-1], color=cores_corantes("am"), label="Azul de Metileno", marker='.')
+        gra4 = mplcursors.cursor(ax, multiple = True)
+        gra4.connect("add", annotations_config)
         valores_grafico("am")
+
 def _process_event(name, axu, coords, *args):
     ax.viewLim  # unstale viewLim.
     if name == "__mouse_click__" or name == "deselect":
@@ -1068,25 +1159,25 @@ def text_break(): # Bind que impede a edição da textbox na aba informações #
 def annotations_config(sel): # Customiza os valores do mplcursors (geral) # 
     sel.annotation.get_bbox_patch().set(boxstyle="square,pad=0.01", linewidth=0, alpha=0, edgecolor="#FFFFFF")
     if sel.artist.get_label() == "Sem corante":
-        sel.annotation.set(text=(f'{sel.target[1]:.2f}'), color=cores_corantes("sc"), position=(sel.target[0], sel.target[1]-12))
+        sel.annotation.set(text=(f'{sel.target[1]:.1f}'), color=cores_corantes("sc"), position=(sel.target[0], sel.target[1]-12))
     elif sel.artist.get_label() == "TTC":
-        sel.annotation.set(text=(f'{sel.target[1]:.2f}'), color=cores_corantes("ttc"),position=(sel.target[0], sel.target[1]-14))
+        sel.annotation.set(text=(f'{sel.target[1]:.1f}'), color=cores_corantes("ttc"),position=(sel.target[0], sel.target[1]-14))
     elif sel.artist.get_label() == "Resazurina":
-        sel.annotation.set(text=(f'{sel.target[1]:.2f}'), color="#660099",position=(sel.target[0], sel.target[1]-16))
+        sel.annotation.set(text=(f'{sel.target[1]:.1f}'), color=cores_corantes("res"),position=(sel.target[0], sel.target[1]-16))
     elif sel.artist.get_label() == "Azul de Metileno":
-        sel.annotation.set(text=(f'{sel.target[1]:.2f}'), color="#64B1FF",position=(sel.target[0], sel.target[1]-6))
+        sel.annotation.set(text=(f'{sel.target[1]:.1f}'), color=cores_corantes("am"),position=(sel.target[0], sel.target[1]-6))
     sel.annotation.arrow_patch.set(arrowstyle="-", fc="black")
     
 def annotations_config_hover(sel1):
     sel1.annotation.get_bbox_patch().set(boxstyle="square,pad=0.01", linewidth=0, alpha=0, edgecolor="#FFFFFF")
     if sel1.artist.get_label() == "Sem corante":
-        sel1.annotation.set(text=(f'{sel1.target[1]:.2f}'), color=cores_corantes("sc"),position=(sel1.target[0], sel1.target[1]-12))
+        sel1.annotation.set(text=(f'{sel1.target[1]:.1f}'), color=cores_corantes("sc"),position=(sel1.target[0], sel1.target[1]-12))
     elif sel1.artist.get_label() == "TTC":
-        sel1.annotation.set(text=(f'{sel1.target[1]:.2f}'), color=cores_corantes("ttc"),position=(sel1.target[0], sel1.target[1]-14))
+        sel1.annotation.set(text=(f'{sel1.target[1]:.1f}'), color=cores_corantes("ttc"),position=(sel1.target[0], sel1.target[1]-14))
     elif sel1.artist.get_label() == "Resazurina":
-        sel1.annotation.set(text=(f'{sel1.target[1]:.2f}'), color="#660099",position=(sel1.target[0], sel1.target[1]-16))
+        sel1.annotation.set(text=(f'{sel1.target[1]:.1f}'), color=cores_corantes("res"),position=(sel1.target[0], sel1.target[1]-16))
     elif sel1.artist.get_label() == "Azul de Metileno":
-        sel1.annotation.set(text=(f'{sel1.target[1]:.2f}'), color="#64B1FF",position=(sel1.target[0], sel1.target[1]-6))
+        sel1.annotation.set(text=(f'{sel1.target[1]:.1}'), color=cores_corantes("am"),position=(sel1.target[0], sel1.target[1]-6))
     sel1.annotation.arrow_patch.set(arrowstyle="-", fc="black")
     sel1.annotation.set_visible(True)
 
@@ -1101,12 +1192,16 @@ def cores_corantes(cor_corante):
             return ttc_alt
         except NameError:
             return "#FF6666"
-    if cor_corante == "res_570":
-        return "#660099"
-    if cor_corante == "res_600":
-        return "#6900EF"
+    if cor_corante == "res":
+        try:
+            return res_alt
+        except:
+            return "#660099"
     if cor_corante == "am":
-        return "#64B1FF"
+        try:
+            return am_alt
+        except:
+            return "#64B1FF"
 
 layout()
 janelagrafico()
