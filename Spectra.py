@@ -14,7 +14,8 @@ import ctypes
 from matplotlib.backend_bases import KeyEvent, MouseEvent
 import keyboard
 from CTkColorPicker import *
-from time import sleep
+from os.path import normpath
+import csv
 
 with open('textfile.txt', 'r', encoding='utf-8') as file:
     strings_txt = load(file)
@@ -609,31 +610,82 @@ def janelagrafico():  # Widgets principais (frames, botões)
     salvarcomo.bind('<Leave>', lambda e: salvarcomo.configure(text_color="#1c1d22", fg_color="#FBFBFE"))
 
 def tabela_tabview():
-    corante = valores_corantes.get()
-    tabela_valores = Sheet(valores_corantes.tab(corante), show_row_index=False, show_top_left=False, headers=["Concentração de\nantibiótico (µg/mL)", "Inibição\nbacteriana (%)"], header_height=50, header_align="center", align="center", width=263, row_index_width=125, height=400, total_columns=2, total_rows=10, row_height=35, column_width=130, show_x_scrollbar=False, show_y_scrollbar=False, empty_horizontal=0, empty_vertical=0)
+    global tabela_valores, var_tabelas
+    corante = tbv_valores_corantes.get()
+    tabela_valores = Sheet(tbv_valores_corantes.tab(corante), show_row_index=False, show_top_left=False, headers=["Concentração de\nantibiótico (µg/mL)", "Inibição\nbacteriana (%)"], header_height=50, header_align="center", align="center", width=263, row_index_width=125, height=400, total_columns=2, total_rows=10, row_height=35, column_width=130, show_x_scrollbar=False, show_y_scrollbar=False, empty_horizontal=0, empty_vertical=0)
     Sheet.set_options(tabela_valores, max_column_width=90, index_selected_cells_bg="#2B6AD0", index_selected_cells_fg="#FFFFFF", header_selected_cells_bg="#2B6AD0",header_selected_cells_fg="#FFFFFF", table_bg="#E3E7F1", table_grid_fg="#FFFFFF", table_selected_cells_bg="#C6CAD1", index_bg="#2B6AD0", index_grid_fg="#FFFFFF", header_bg="#2B6AD0", header_grid_fg="#FFFFFF", font=('Helvetica', 10, 'normal'), table_fg='#000000', index_fg='#E3E7F1', header_fg='#E3E7F1', table_selected_cells_border_fg="#2B6AD0", table_selected_rows_border_fg ="#2B6AD0", table_selected_columns_border_fg= "#2B6AD0")
     tabela_valores.enable_bindings("all")
     tabela_valores.disable_bindings("column_height_resize", "<MouseWheel>", "column_width_resize", "row_width_resize", "row_height_resize")
-    tabela_valores.place(x=20, y=20)
+    tabela_valores.place(x=15, y=10)
+
+    var_tabelas = ctk.StringVar(value="Off")
+    checkbox_tabelas = ctk.CTkCheckBox(tbv_valores_corantes, width=100, height=20, text="Mostrar valores", font=ctk.CTkFont(family="Segoe UI", size=17), checkmark_color="#FBFBFE", fg_color="#2B6AD0", hover=False, command= lambda: mostrar_tabelas(),variable=var_tabelas, onvalue="On", offvalue="Off")
+    checkbox_tabelas.grid(row=3, sticky="s", pady=40)
+    botao_salvar_csv = ctk.CTkButton(tbv_valores_corantes, cursor='hand2', width=140, height=37, hover=False, font=ctk.CTkFont(family="Segoe UI", size=17, weight='bold'), text="Salvar .csv", fg_color="#2B6AD0", corner_radius=10, command = salvar_csv)
+    botao_salvar_csv.grid(row=3, sticky="s")
+
     if corante == "Sem corante":
-        valores_corantes.configure(segmented_button_selected_color=cores_corantes("sc"), segmented_button_selected_hover_color=cores_corantes("sc"))
+        tbv_valores_corantes.configure(segmented_button_selected_color=cores_corantes("sc"), segmented_button_selected_hover_color=cores_corantes("sc"))
         tabela_valores.span("A", transposed=True, header=False).data = diluicao_escolhida
         tabela_valores.span("B", transposed=True, header=False).data = porcentagens["sc"][:-2][::-1]
     if corante == "TTC":
-        valores_corantes.configure(segmented_button_selected_color=cores_corantes("ttc"), segmented_button_selected_hover_color=cores_corantes("ttc"))
+        tbv_valores_corantes.configure(segmented_button_selected_color=cores_corantes("ttc"), segmented_button_selected_hover_color=cores_corantes("ttc"))
         tabela_valores.span("A", transposed=True, header=False).data = diluicao_escolhida
         tabela_valores.span("B", transposed=True, header=False).data = porcentagens["ttc"][:-2][::-1]
     if corante == "Resazurina":
-        valores_corantes.configure(segmented_button_selected_color=cores_corantes("res"), segmented_button_selected_hover_color=cores_corantes("res"))
+        tbv_valores_corantes.configure(segmented_button_selected_color=cores_corantes("res"), segmented_button_selected_hover_color=cores_corantes("res"))
         tabela_valores.span("A", transposed=True, header=False).data = diluicao_escolhida
         tabela_valores.span("B", transposed=True, header=False).data = mediasresazurina["res"][:-2][::-1]
     if corante == "Azul de Metileno":
-        valores_corantes.configure(segmented_button_selected_color=cores_corantes("am"), segmented_button_selected_hover_color=cores_corantes("am"))
+        tbv_valores_corantes.configure(segmented_button_selected_color=cores_corantes("am"), segmented_button_selected_hover_color=cores_corantes("am"))
         tabela_valores.span("A", transposed=True, header=False).data = diluicao_escolhida
         tabela_valores.span("B", transposed=True, header=False).data = porcentagens["am"][:-2][::-1]
 
+def mostrar_tabelas():
+    global lista_tabelas, headers
+    headers = ["Concentração de\nantibiótico (µg/mL)", f"Inibição bacteriana (%)\n{tbv_valores_corantes.get()}"]
+    lista_tabelas = ax.get_legend_handles_labels()[1]
+    tabelas = len(lista_tabelas)
+    if var_tabelas.get() == "On":
+        if tabelas > 1:
+            tbv_valores_corantes.configure(width=300+135*(tabelas-1))
+            obter_valores.geometry(f"{300+(70*tabelas-1)}x600")
+            tabela_valores.configure(width=262+131*(tabelas-1))
+            tabela_valores.insert_columns(tabelas-1)
+            lista_tabelas.remove(tbv_valores_corantes.get())
+            for i in range (4):
+                iteracao("C")
+                iteracao("D")
+                iteracao("E")
+                iteracao("F")
+    tabela_valores.set_all_column_widths(150)
+
+def iteracao(col):
+    if "Sem corante" in lista_tabelas:
+        tabela_valores.span(col, transposed=True, header=False).data = porcentagens["sc"][:-2][::-1]
+        lista_tabelas.remove("Sem corante")
+        headers.append("Inibição bacteriana (%)\nSem corante")
+        tabela_valores.headers(newheaders=headers)
+    elif "TTC" in lista_tabelas:
+        tabela_valores.span(col, transposed=True, header=False).data = porcentagens["ttc"][:-2][::-1]
+        lista_tabelas.remove("TTC")
+        headers.append("Inibição bacteriana (%)\nTTC")
+        tabela_valores.headers(newheaders=headers)
+    elif "Resazurina" in lista_tabelas:
+        tabela_valores.span(col, transposed=True, header=False).data = mediasresazurina["res"][:-2][::-1]
+        lista_tabelas.remove("Inibição bacteriana (%)\nResazurina")
+        headers.append("Inibição bacteriana (%)\nResazurina")
+        tabela_valores.headers(newheaders=headers)
+    elif "Azul de Metileno" in lista_tabelas:
+        tabela_valores.span(col, transposed=True, header=False).data = porcentagens["am"][:-2][::-1] 
+        lista_tabelas.remove("Azul de Metileno")  
+        headers.append("Inibição bacteriana (%)\nAzul de Metileno")
+        tabela_valores.headers(newheaders=headers)
+    print(headers)
+            
+
 def toplevel_valores():
-    global valores_corantes, valores_sc, valores_ttc
+    global tbv_valores_corantes, valores_sc, valores_ttc, obter_valores
     try:
         if obter_valores.winfo_exists() == True:
                 obter_valores.deiconify()
@@ -649,24 +701,22 @@ def toplevel_valores():
         obter_valores.protocol("WM_DELETE_WINDOW", lambda : botao_valores.configure(state='normal') or obter_valores.withdraw())
         obter_valores.grid_propagate(False)
         obter_valores.grid_rowconfigure(0, weight=0)
-
         titulo = ctk.CTkLabel(obter_valores, text=" Valores do gráfico\n―――――――――――", justify="left", font=ctk.CTkFont(family="Segoe UI", size=25), text_color="#2B6AD0")
-        titulo.grid(row=0, sticky="nw", padx=10, pady=5)
+        titulo.grid(row=0, sticky="nw", padx=10)
         titulo.propagate(False)
 
-        valores_corantes = ctk.CTkTabview(obter_valores, width=300, height=520, text_color="black", fg_color="#ffffff", segmented_button_fg_color="#eeece9", segmented_button_unselected_color="#fbfbfe", segmented_button_unselected_hover_color="#e8effd", command=tabela_tabview)
-        valores_corantes.grid(row=2, column=0)
+        tbv_valores_corantes = ctk.CTkTabview(obter_valores, width=300, height=530, text_color="black", fg_color="#ffffff", segmented_button_fg_color="#eeece9", segmented_button_unselected_color="#fbfbfe", segmented_button_unselected_hover_color="#e8effd", command=tabela_tabview)
+        tbv_valores_corantes.grid(row=2, column=0, sticky="n")
         if len(porcentagens["sc"]) > 1:
-            valores_sc = valores_corantes.add("Sem corante")
+            valores_sc = tbv_valores_corantes.add("Sem corante")
         if len(porcentagens["ttc"]) > 1:    
-            valores_ttc = valores_corantes.add("TTC")
+            valores_ttc = tbv_valores_corantes.add("TTC")
         if len(mediasresazurina["res"]) > 1:
-            valores_res = valores_corantes.add("Resazurina")
+            valores_res = tbv_valores_corantes.add("Resazurina")
         if len(porcentagens["am"]) > 1:
-            valores_am = valores_corantes.add("Azul de Metileno")
+            valores_am = tbv_valores_corantes.add("Azul de Metileno")
         tabela_tabview()
-        
-
+    
 def toplevel_config_adc():
     global config_adc, titulo_config, label_sc, bt_cor_sc, label_ttc, bt_cor_ttc, label_res, bt_cor_res, label_am, bt_cor_am, eixox_config, eixoy_config
     try:
@@ -750,7 +800,6 @@ def redefinir_texto(texto):
         eixoy_config.delete(0, tkinter.END)
         eixoy_config.insert(1, "Inibição bacteriana (%)")
     
-
 def color_picker(corante):
     global colorpicker
     config_adc.geometry("730x600")
@@ -978,6 +1027,20 @@ def salvargrafico(choice): # Função para salvar o gráfico em formato de arqui
         else:
             return
 
+def salvar_csv(): # Função para salvar o gráfico em .csv #
+    archive = asksaveasfilename(initialfile="Dados", initialdir="Dados", filetypes=(("CSV","*.csv"),('all files','*.*')), defaultextension=".*", title="dados")
+    if archive:
+        hearders_format = []
+        headers = tabela_valores.headers()
+        for valor in headers:
+            novo_valor = str(valor).replace("\n", " ")
+            hearders_format.append(novo_valor)
+        data = tabela_valores.get_sheet_data()
+        with open(archive, "w", newline="") as f:
+            writer = csv.writer(f, delimiter=";")
+            writer.writerow(hearders_format)
+            writer.writerows(data)
+            tkinter.messagebox.showinfo(title="Salvar gráfico", message= "Gráfico salvo com sucesso!")
 
 #####* Introduz os elementos gráficos da janela de informações #####
                 
