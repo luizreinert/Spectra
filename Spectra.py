@@ -62,7 +62,7 @@ def layout():
     barralateral = ctk.CTkFrame(master=root, width=200, height=600, fg_color="#2B6AD0", bg_color="#2B6AD0")
     barralateral.grid(row=0, column=0, sticky="nsew")
     barralateral.grid_propagate(False)
-    fundocinza = ctk.CTkTabview(master=root, width=1129, height=600, fg_color="#E3E7F1", state="disabled", anchor="ne", bg_color="#E3E7F1", text_color="#E3E7F1", segmented_button_fg_color="#E3E7F1", segmented_button_unselected_color="#E3E7F1", segmented_button_selected_hover_color="#E3E7F1", segmented_button_unselected_hover_color="#E3E7F1", text_color_disabled="#E3E7F1", segmented_button_selected_color="#E3E7F1")
+    fundocinza = ctk.CTkTabview(master=root, width=1129, height=600, fg_color="#E3E7F1", state="disabled", anchor="se", bg_color="#E3E7F1", text_color="#E3E7F1", segmented_button_fg_color="#E3E7F1", segmented_button_unselected_color="#E3E7F1", segmented_button_selected_hover_color="#E3E7F1", segmented_button_unselected_hover_color="#E3E7F1", text_color_disabled="#E3E7F1", segmented_button_selected_color="#E3E7F1")
     fundocinza._outer_button_overhang = 0
     fundocinza._segmented_button.grid_forget()
     janela_dados = fundocinza.add("dados")
@@ -72,7 +72,7 @@ def layout():
 
     fundocinza.grid_propagate(False)
     
-    imglogo = ctk.CTkLabel(master=barralateral, image=imagemlogo, text="")
+    imglogo = ctk.CTkLabel(barralateral, image=imagemlogo, text="")
     imglogo.grid(row=0, pady=17, padx=10, sticky="n")
 
     espaço = ctk.CTkLabel(barralateral, text="\n\n\n\n")
@@ -89,10 +89,6 @@ def layout():
     botao_info = criarbotao_pLateral(barralateral, infoB, "Informações")
     botao_info.grid(row=4, pady=8, padx=13)
     botao_info.configure(command= lambda: tab_switch("informacoes"))
-
-    botao5 = criarbotao_pLateral(barralateral, infoB, "Null")
-    botao5.grid(row=5, pady=8, padx=13)
-    botao5.configure(state="disabled", command= lambda: tab_switch("informacoes"))
 
     botao_sair = criarbotao_pLateral(barralateral, sairB, "Sair")
     botao_sair.grid(row=6)
@@ -114,6 +110,8 @@ def criarbotao_pLateral(root, icon, texto): # Cria os botões de troca de aba na
 #####* Introduz os elementos gráficos da janela de dados #####
 def janeladados(): # Widgets principais (frames, botões, tabela principal)
     global botao_dados, tabela, dados_tabela, valores_apagar, resultados_medias, porcentagens, mediasresazurina
+    titulo_inserirdados = ctk.CTkLabel(janela_dados, text="Inserir dados", font=fontetitulos, text_color="#2B6AD0")
+    titulo_inserirdados.grid(row=0, column=0, sticky="nw", padx=25, pady=15)
     moldura = ctk.CTkFrame(janela_dados, height=320, width=1050, fg_color="#FFFFFF", corner_radius=12)
     moldura.grid(row=3, columnspan=3, sticky="nsew", padx=30, pady=25)
     moldura.grid_propagate(False)
@@ -138,9 +136,6 @@ def janeladados(): # Widgets principais (frames, botões, tabela principal)
 ## FRAME 1 ##
 def frame_opcoes(): # Cria os widgets do frame de opções, relacionado à escolha da bacteria e opção do cálculo de resazurina
     global op_s_aureus, bac_var, botaoresazurina, outra_bac
-    titulo_inserirdados = ctk.CTkLabel(janela_dados, text="Inserir dados", font=fontetitulos, text_color="#2B6AD0")
-    titulo_inserirdados.grid(row=0, sticky="nw", padx=27)
-    titulo_inserirdados.grid_rowconfigure(0, pad=10)
     frame_escolhabac= ctk.CTkFrame(janela_dados, height=120, width=260, fg_color="#FBFBFE", bg_color="#E3E7F1", corner_radius=16)
     frame_escolhabac.grid(rowspan=2,row=1, column=0, sticky="wse", padx=30)
     frame_escolhabac.grid_propagate(False)
@@ -562,20 +557,23 @@ def cálculos(cor): # Realiza os cálculos principais, utilizando as médias dos
 #####* Introduz os elementos gráficos da janela do gráfico #####
     
 def janelagrafico():  # Widgets principais (frames, botões)
-    global molduragraf, salvarcomo2, var_grid, var_valores, var_titulo, var_legenda, botao_config_adc, botao_valores
+    global molduragraf, salvarcomo2, var_grid, var_valores, var_titulo, var_legenda, botao_config_adc, botao_valores, checkbox_mostrar_valores
     var_grid = ctk.StringVar(value="Off")
     var_valores = ctk.StringVar(value="Off")
     var_titulo = ctk.StringVar(value="On")
     var_legenda = ctk.StringVar(value="On")
 
+    label_vazia = ctk.CTkLabel(janela_grafico, text="", font=fonte, text_color="#2B6AD0")
+    label_vazia.grid(row=0, column=1, sticky="n", pady=0)
+
     molduraopcoes = ctk.CTkFrame(janela_grafico, height=70, width=1050, fg_color="#FFFFFF", corner_radius=16)
-    molduraopcoes.grid(row=0, column=1, sticky="ne", padx=30)
+    molduraopcoes.grid(row=1, column=1, sticky="ne", padx=30)
     molduraopcoes.grid_propagate(False)
     molduraopcoes.columnconfigure(2, weight=1)
     molduraopcoes.rowconfigure([0,1], pad=5)
 
     molduragraf = ctk.CTkFrame(janela_grafico, height=460, width=1050, fg_color="#FFFFFF", corner_radius=16)
-    molduragraf.grid(row=1, column=0, columnspan=2, sticky="nsew", pady=15, padx=30)
+    molduragraf.grid(row=2, column=0, columnspan=2, sticky="nsew", pady=15, padx=30)
     molduragraf.grid_propagate(False)
     molduragraf.grid_rowconfigure(0, weight=1)
     molduragraf.grid_columnconfigure(0, weight=1)
@@ -583,8 +581,8 @@ def janelagrafico():  # Widgets principais (frames, botões)
     checkbox_grid = ctk.CTkCheckBox(molduraopcoes, width=100, height=20, text="Linhas de grade",font=ctk.CTkFont(family="Segoe UI", size=17), checkmark_color="#FBFBFE", fg_color="#2B6AD0", hover=False, command= lambda: grid_grafico(),variable=var_grid, onvalue="On", offvalue="Off")
     checkbox_grid.grid(column=0, row=0, padx=10, sticky="w",pady=5)
 
-    checkbox_valores = ctk.CTkCheckBox(molduraopcoes, width=100, height=20, text="Mostrar valores", font=ctk.CTkFont(family="Segoe UI", size=17), checkmark_color="#FBFBFE", fg_color="#2B6AD0", hover=False, command= lambda: mostrar_valores(),variable=var_valores, onvalue="On", offvalue="Off")
-    checkbox_valores.grid(column=0, row=1, padx=10, sticky="w")
+    checkbox_mostrar_valores = ctk.CTkCheckBox(molduraopcoes, width=100, height=20, text="Mostrar valores", font=ctk.CTkFont(family="Segoe UI", size=17), checkmark_color="#FBFBFE", fg_color="#2B6AD0", hover=False, command= lambda: mostrar_valores(),variable=var_valores, onvalue="On", offvalue="Off")
+    checkbox_mostrar_valores.grid(column=0, row=1, padx=10, sticky="w")
 
     checkbox_titulo = ctk.CTkCheckBox(molduraopcoes, width=100, height=20, text="Mostrar título", font=ctk.CTkFont(family="Segoe UI", size=17), checkmark_color="#FBFBFE", fg_color="#2B6AD0", hover=False, command= lambda: titulo_grafico("show"),variable=var_titulo, onvalue="On", offvalue="Off")
     checkbox_titulo.grid(column=1, row=0, padx=10, sticky="w")
@@ -597,7 +595,7 @@ def janelagrafico():  # Widgets principais (frames, botões)
     botao_valores.bind('<Enter>', lambda e: botao_valores.configure(text_color="#2B6AD0", fg_color="#e8effd"))
     botao_valores.bind('<Leave>', lambda e: botao_valores.configure(text_color="#1c1d22", fg_color="#FBFBFE"))
 
-    botao_config_adc = ctk.CTkButton(molduraopcoes,width=215, height=45, corner_radius=10, cursor='hand2',hover=False, text="Configurações", border_color="#dadada", border_width=2, font=fontenormal, fg_color="#FBFBFE", text_color="#1c1d22", command=toplevel_config_adc)
+    botao_config_adc = ctk.CTkButton(molduraopcoes,width=215, height=45, corner_radius=10, cursor='hand2',hover=False, text="Configurações", border_color="#dadada", border_width=2, font=fontenormal, fg_color="#FBFBFE", text_color="#1c1d22", command=toplevel_personalizar)
     botao_config_adc.grid(column=3, row=0, rowspan=2, sticky="e", padx=10)
     botao_config_adc.bind('<Enter>', lambda e: botao_config_adc.configure(text_color="#2B6AD0", fg_color="#e8effd"))
     botao_config_adc.bind('<Leave>', lambda e: botao_config_adc.configure(text_color="#1c1d22", fg_color="#FBFBFE"))
@@ -609,20 +607,43 @@ def janelagrafico():  # Widgets principais (frames, botões)
     salvarcomo.bind('<Enter>', lambda e: salvarcomo.configure(text_color="#2B6AD0", fg_color="#e8effd"))
     salvarcomo.bind('<Leave>', lambda e: salvarcomo.configure(text_color="#1c1d22", fg_color="#FBFBFE"))
 
-def tabela_tabview():
-    global tabela_valores, var_tabelas
+def mostrar_tabelas(): # Função da checkbox "Mostrar todas as tabelas". Caso exista mais de uma linha no gráfico, juntará todos os valores em uma única tabela.
+    global lista_tabelas, headers, colunas
+    headers = ["Concentração de\nantibiótico (µg/mL)", f"Inibição bacteriana (%)\n{tbv_valores_corantes.get()}"]
+    lista_tabelas = ax.get_legend_handles_labels()[1]
+    tabelas = len(lista_tabelas)
+    if var_tabelas.get() == "On":
+        tbv_valores_corantes.configure(state="disabled")
+        if tabelas > 1:
+            obter_valores.geometry(f"{340+150*(tabelas-1)}x600")
+            tbv_valores_corantes.configure(width=340+150*(tabelas-1))
+            tabela_valores.configure(width=300+150*(tabelas-1))
+        tabela_valores.insert_columns(tabelas-1)
+        lista_tabelas.remove(tbv_valores_corantes.get())
+        colunas = ["C", "D", "E", "F"]
+        for coluna in colunas:
+            iteracao_tabelas(coluna)
+    if var_tabelas.get() == "Off":
+        tbv_valores_corantes.configure(state="enabled")
+        if tabelas > 1:
+            obter_valores.geometry("340x600")
+            tbv_valores_corantes.configure(width=340)
+            tabela_valores.configure(width=300)
+            colunas = [2, 3, 4, 5]
+            try:
+                for coluna in colunas:
+                    tabela_valores.del_columns(coluna)
+            except IndexError:
+                pass
+
+def tabela_tabview(): # Cria o "tabview" das tabelas, podendo alternar individualmente caso haja mais de uma linha no gráfico.
+    global tabela_valores
     corante = tbv_valores_corantes.get()
-    tabela_valores = Sheet(tbv_valores_corantes.tab(corante), show_row_index=False, show_top_left=False, headers=["Concentração de\nantibiótico (µg/mL)", "Inibição\nbacteriana (%)"], header_height=50, header_align="center", align="center", width=263, row_index_width=125, height=400, total_columns=2, total_rows=10, row_height=35, column_width=130, show_x_scrollbar=False, show_y_scrollbar=False, empty_horizontal=0, empty_vertical=0)
-    Sheet.set_options(tabela_valores, max_column_width=90, index_selected_cells_bg="#2B6AD0", index_selected_cells_fg="#FFFFFF", header_selected_cells_bg="#2B6AD0",header_selected_cells_fg="#FFFFFF", table_bg="#E3E7F1", table_grid_fg="#FFFFFF", table_selected_cells_bg="#C6CAD1", index_bg="#2B6AD0", index_grid_fg="#FFFFFF", header_bg="#2B6AD0", header_grid_fg="#FFFFFF", font=('Helvetica', 10, 'normal'), table_fg='#000000', index_fg='#E3E7F1', header_fg='#E3E7F1', table_selected_cells_border_fg="#2B6AD0", table_selected_rows_border_fg ="#2B6AD0", table_selected_columns_border_fg= "#2B6AD0")
+    tabela_valores = Sheet(tbv_valores_corantes.tab(corante), show_row_index=False, show_top_left=False, headers=["Concentração de\nantibiótico (µg/mL)", f"Inibição bacteriana (%)\n{tbv_valores_corantes.get()}"], header_height=50, header_align="center", align="center", width=300, row_index_width=125, height=400, total_columns=2, total_rows=10, row_height=35, column_width=150, show_x_scrollbar=False, show_y_scrollbar=False, empty_horizontal=0, empty_vertical=0)
+    Sheet.set_options(tabela_valores, index_selected_cells_bg="#2B6AD0", index_selected_cells_fg="#FFFFFF", header_selected_cells_bg="#2B6AD0",header_selected_cells_fg="#FFFFFF", table_bg="#E3E7F1", table_grid_fg="#FFFFFF", table_selected_cells_bg="#C6CAD1", index_bg="#2B6AD0", index_grid_fg="#FFFFFF", header_bg="#2B6AD0", header_grid_fg="#FFFFFF", font=('Helvetica', 10, 'normal'), table_fg='#000000', index_fg='#E3E7F1', header_fg='#E3E7F1', table_selected_cells_border_fg="#2B6AD0", table_selected_rows_border_fg ="#2B6AD0", table_selected_columns_border_fg= "#2B6AD0")
     tabela_valores.enable_bindings("all")
     tabela_valores.disable_bindings("column_height_resize", "<MouseWheel>", "column_width_resize", "row_width_resize", "row_height_resize")
     tabela_valores.place(x=15, y=10)
-
-    var_tabelas = ctk.StringVar(value="Off")
-    checkbox_tabelas = ctk.CTkCheckBox(tbv_valores_corantes, width=100, height=20, text="Mostrar valores", font=ctk.CTkFont(family="Segoe UI", size=17), checkmark_color="#FBFBFE", fg_color="#2B6AD0", hover=False, command= lambda: mostrar_tabelas(),variable=var_tabelas, onvalue="On", offvalue="Off")
-    checkbox_tabelas.grid(row=3, sticky="s", pady=40)
-    botao_salvar_csv = ctk.CTkButton(tbv_valores_corantes, cursor='hand2', width=140, height=37, hover=False, font=ctk.CTkFont(family="Segoe UI", size=17, weight='bold'), text="Salvar .csv", fg_color="#2B6AD0", corner_radius=10, command = salvar_csv)
-    botao_salvar_csv.grid(row=3, sticky="s")
 
     if corante == "Sem corante":
         tbv_valores_corantes.configure(segmented_button_selected_color=cores_corantes("sc"), segmented_button_selected_hover_color=cores_corantes("sc"))
@@ -641,83 +662,51 @@ def tabela_tabview():
         tabela_valores.span("A", transposed=True, header=False).data = diluicao_escolhida
         tabela_valores.span("B", transposed=True, header=False).data = porcentagens["am"][:-2][::-1]
 
-def mostrar_tabelas():
-    global lista_tabelas, headers
-    headers = ["Concentração de\nantibiótico (µg/mL)", f"Inibição bacteriana (%)\n{tbv_valores_corantes.get()}"]
-    lista_tabelas = ax.get_legend_handles_labels()[1]
-    tabelas = len(lista_tabelas)
-    if var_tabelas.get() == "On":
-        if tabelas > 1:
-            tbv_valores_corantes.configure(width=300+135*(tabelas-1))
-            obter_valores.geometry(f"{300+(70*tabelas-1)}x600")
-            tabela_valores.configure(width=262+131*(tabelas-1))
-            tabela_valores.insert_columns(tabelas-1)
-            lista_tabelas.remove(tbv_valores_corantes.get())
-            for i in range (4):
-                iteracao("C")
-                iteracao("D")
-                iteracao("E")
-                iteracao("F")
-    tabela_valores.set_all_column_widths(150)
-
-def iteracao(col):
-    if "Sem corante" in lista_tabelas:
-        tabela_valores.span(col, transposed=True, header=False).data = porcentagens["sc"][:-2][::-1]
-        lista_tabelas.remove("Sem corante")
-        headers.append("Inibição bacteriana (%)\nSem corante")
-        tabela_valores.headers(newheaders=headers)
-    elif "TTC" in lista_tabelas:
-        tabela_valores.span(col, transposed=True, header=False).data = porcentagens["ttc"][:-2][::-1]
-        lista_tabelas.remove("TTC")
-        headers.append("Inibição bacteriana (%)\nTTC")
-        tabela_valores.headers(newheaders=headers)
-    elif "Resazurina" in lista_tabelas:
-        tabela_valores.span(col, transposed=True, header=False).data = mediasresazurina["res"][:-2][::-1]
-        lista_tabelas.remove("Inibição bacteriana (%)\nResazurina")
-        headers.append("Inibição bacteriana (%)\nResazurina")
-        tabela_valores.headers(newheaders=headers)
-    elif "Azul de Metileno" in lista_tabelas:
-        tabela_valores.span(col, transposed=True, header=False).data = porcentagens["am"][:-2][::-1] 
-        lista_tabelas.remove("Azul de Metileno")  
-        headers.append("Inibição bacteriana (%)\nAzul de Metileno")
-        tabela_valores.headers(newheaders=headers)
-    print(headers)
-            
-
-def toplevel_valores():
-    global tbv_valores_corantes, valores_sc, valores_ttc, obter_valores
+def toplevel_valores(): # Cria o menu com as tabelas contendo os valores do gráfico
+    global tbv_valores_corantes, valores_sc, valores_ttc, obter_valores, var_tabelas, checkbox_tabelas
+    try:
+        if var_tabelas.get() == "On":
+            checkbox_tabelas.toggle()
+    except (NameError, IndexError):
+        pass
     try:
         if obter_valores.winfo_exists() == True:
-                obter_valores.deiconify()
+                obter_valores.destroy()
     except (NameError, UnboundLocalError):
-        botao_valores.configure(state="disabled")
-        obter_valores = ctk.CTkToplevel()
-        obter_valores.focus()
-        obter_valores.geometry("300x600+80+190")
-        obter_valores.title("Configurar bactéria")
-        obter_valores.resizable(False, False)
-        obter_valores.after(200, obter_valores.lift)
-        obter_valores.after(200, lambda: obter_valores.iconbitmap("assets\logos\icone_programa.ico"))
-        obter_valores.protocol("WM_DELETE_WINDOW", lambda : botao_valores.configure(state='normal') or obter_valores.withdraw())
-        obter_valores.grid_propagate(False)
-        obter_valores.grid_rowconfigure(0, weight=0)
-        titulo = ctk.CTkLabel(obter_valores, text=" Valores do gráfico\n―――――――――――", justify="left", font=ctk.CTkFont(family="Segoe UI", size=25), text_color="#2B6AD0")
-        titulo.grid(row=0, sticky="nw", padx=10)
-        titulo.propagate(False)
+        pass
+    botao_valores.configure(state="disabled")
+    obter_valores = ctk.CTkToplevel()
+    obter_valores.focus()
+    obter_valores.geometry("340x600+80+190")
+    obter_valores.title("Configurar bactéria")
+    obter_valores.resizable(False, False)
+    obter_valores.after(200, obter_valores.lift)
+    obter_valores.after(200, lambda: obter_valores.iconbitmap("assets\logos\icone_programa.ico"))
+    obter_valores.protocol("WM_DELETE_WINDOW", lambda : botao_valores.configure(state='normal') or obter_valores.withdraw())
+    obter_valores.grid_propagate(False)
+    titulo = ctk.CTkLabel(obter_valores, text=" Valores do gráfico\n―――――――――――――――――――――――――――――――", justify="left", font=ctk.CTkFont(family="Segoe UI", size=25), text_color="#2B6AD0")
+    titulo.grid(columnspan=4, row=0, sticky="nw", padx=10)
+    titulo.propagate(False)
 
-        tbv_valores_corantes = ctk.CTkTabview(obter_valores, width=300, height=530, text_color="black", fg_color="#ffffff", segmented_button_fg_color="#eeece9", segmented_button_unselected_color="#fbfbfe", segmented_button_unselected_hover_color="#e8effd", command=tabela_tabview)
-        tbv_valores_corantes.grid(row=2, column=0, sticky="n")
-        if len(porcentagens["sc"]) > 1:
-            valores_sc = tbv_valores_corantes.add("Sem corante")
-        if len(porcentagens["ttc"]) > 1:    
-            valores_ttc = tbv_valores_corantes.add("TTC")
-        if len(mediasresazurina["res"]) > 1:
-            valores_res = tbv_valores_corantes.add("Resazurina")
-        if len(porcentagens["am"]) > 1:
-            valores_am = tbv_valores_corantes.add("Azul de Metileno")
-        tabela_tabview()
-    
-def toplevel_config_adc():
+    tbv_valores_corantes = ctk.CTkTabview(obter_valores, width=340, height=530, text_color="black", fg_color="#ffffff", segmented_button_fg_color="#eeece9", segmented_button_unselected_color="#fbfbfe", segmented_button_unselected_hover_color="#e8effd", command=tabela_tabview)
+    tbv_valores_corantes.grid(row=2, column=0, sticky="nw")
+    if len(porcentagens["sc"]) > 1:
+        valores_sc = tbv_valores_corantes.add("Sem corante")
+    if len(porcentagens["ttc"]) > 1:    
+        valores_ttc = tbv_valores_corantes.add("TTC")
+    if len(mediasresazurina["res"]) > 1:
+        valores_res = tbv_valores_corantes.add("Resazurina")
+    if len(porcentagens["am"]) > 1:
+        valores_am = tbv_valores_corantes.add("Azul de Metileno")
+    tabela_tabview()
+
+    var_tabelas = ctk.StringVar(value="Off")
+    checkbox_tabelas = ctk.CTkCheckBox(tbv_valores_corantes, width=100, height=20, text="Unir tabelas", font=ctk.CTkFont(family="Segoe UI", size=17), checkmark_color="#FBFBFE", fg_color="#2B6AD0", hover=False, command= lambda: mostrar_tabelas(),variable=var_tabelas, onvalue="On", offvalue="Off")
+    checkbox_tabelas.grid(row=3, sticky="s", pady=45)
+    botao_salvar_csv = ctk.CTkButton(tbv_valores_corantes, cursor='hand2', width=140, height=37, hover=False, font=ctk.CTkFont(family="Segoe UI", size=17, weight='bold'), text="Salvar .csv", fg_color="#2B6AD0", corner_radius=10, command = salvar_csv)
+    botao_salvar_csv.grid(row=3, sticky="s")
+
+def toplevel_personalizar(): # Cria o menu de personalização do gráfico
     global config_adc, titulo_config, label_sc, bt_cor_sc, label_ttc, bt_cor_ttc, label_res, bt_cor_res, label_am, bt_cor_am, eixox_config, eixoy_config
     try:
         if config_adc.winfo_exists() == True:
@@ -786,10 +775,10 @@ def toplevel_config_adc():
         bt_cor_am = ctk.CTkButton(config_adc, text="", height=40, width=40, corner_radius=3, hover=False, fg_color="#64B1FF", border_width=2, command= lambda: color_picker("am"))
         bt_cor_am.grid(row=9, columnspan=2, sticky="e", padx=5, pady=15)
 
-        botao_confirmar = ctk.CTkButton(config_adc, cursor='hand2', width=170, height=40, hover=False, font=ctk.CTkFont(family="Segoe UI", size=17, weight='bold'), text="Confirmar", fg_color="#2B6AD0", corner_radius=10, command = confirmar_config_adc)
+        botao_confirmar = ctk.CTkButton(config_adc, cursor='hand2', width=170, height=40, hover=False, font=ctk.CTkFont(family="Segoe UI", size=17, weight='bold'), text="Confirmar", fg_color="#2B6AD0", corner_radius=10, command = confirmar_personalizar)
         botao_confirmar.place(x=135, y=550)
 
-def redefinir_texto(texto):
+def redefinir_texto(texto): # Redefine o título e os eixos para as configurações nativas.
     if texto == "titulo":
         titulo_config.delete(0, tkinter.END)
         titulo_config.insert(1, "Concentração de antibiótico x Inibição bacteriana")
@@ -800,7 +789,7 @@ def redefinir_texto(texto):
         eixoy_config.delete(0, tkinter.END)
         eixoy_config.insert(1, "Inibição bacteriana (%)")
     
-def color_picker(corante):
+def color_picker(corante): # Cria o colo picker para cada corante, permitindo a personalização da cor das linhas e valores do corante correspondente no gráfico
     global colorpicker
     config_adc.geometry("730x600")
     if corante == "sc":
@@ -816,7 +805,7 @@ def color_picker(corante):
         colorpicker = CTkColorPicker(config_adc, width=300, orientation="horizontal", initial_color=label_am.cget("fg_color"),command=lambda e: (label_am.configure(fg_color=e, text=e), bt_cor_am.configure(fg_color=e)))
         colorpicker.grid(row=3, rowspan=6, column=2, columnspan=2, sticky="sw", padx=32)   
 
-def confirmar_config_adc():
+def confirmar_personalizar(): # Quando o botão (Confirmar) no menu de personalização é pressionado, refaz o gráfico com as opções escolhidas.
     global sc_alt, ttc_alt, res_alt, am_alt
     botao_config_adc.configure(state="normal")
     try:
@@ -930,7 +919,8 @@ def plotar_gráfico(diluicao): # Introduz as porcentagens de inibição calculad
         gra4 = mplcursors.cursor(ax, multiple = True)
         gra4.connect("add", annotations_config)
         valores_grafico("am")
-
+    checkbox_mostrar_valores.deselect()
+    
 def _process_event(name, axu, coords, *args):
     ax.viewLim  # unstale viewLim.
     if name == "__mouse_click__" or name == "deselect":
@@ -1132,7 +1122,6 @@ def hover_fix(tab, botao, icon): # Ajusta o hover dos botões, mantendo a cor do
             botao.unbind('<Leave>')
             botao.configure(fg_color="#FBFBFE", image=icon, text_color="#2B6AD0")
         else:
-            fundocinza.set(tab)
             tkinter.messagebox.showerror(title="Erro", message="Nenhum gráfico encontrado!")
             fundocinza.set(fundocinza.get())
 
@@ -1265,6 +1254,28 @@ def cores_corantes(cor_corante):
             return am_alt
         except:
             return "#64B1FF"
+
+def iteracao_tabelas(col): # Função de iteração das tabelas. Verifica a quantidade de linhas no gráfico e monta as tabelas individualmente para cada corante existente no gráfico.
+    if "Sem corante" in lista_tabelas:
+        tabela_valores.span(col, transposed=True, header=False).data = porcentagens["sc"][:-2][::-1]
+        lista_tabelas.remove("Sem corante")
+        headers.append("Inibição bacteriana (%)\nSem corante")
+        tabela_valores.headers(newheaders=headers)
+    elif "TTC" in lista_tabelas:
+        tabela_valores.span(col, transposed=True, header=False).data = porcentagens["ttc"][:-2][::-1]
+        lista_tabelas.remove("TTC")
+        headers.append("Inibição bacteriana (%)\nTTC")
+        tabela_valores.headers(newheaders=headers)
+    elif "Resazurina" in lista_tabelas:
+        tabela_valores.span(col, transposed=True, header=False).data = mediasresazurina["res"][:-2][::-1]
+        lista_tabelas.remove("Resazurina")
+        headers.append("Inibição bacteriana (%)\nResazurina")
+        tabela_valores.headers(newheaders=headers)
+    elif "Azul de Metileno" in lista_tabelas:
+        tabela_valores.span(col, transposed=True, header=False).data = porcentagens["am"][:-2][::-1] 
+        lista_tabelas.remove("Azul de Metileno")  
+        headers.append("Inibição bacteriana (%)\nAzul de Metileno")
+        tabela_valores.headers(newheaders=headers)       
 
 layout()
 janelagrafico()
