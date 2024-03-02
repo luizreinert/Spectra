@@ -2,7 +2,7 @@
 <p align="center">
   <img src="readme_images\logo_spectra.png" width="1068" title="hover text">
 </p>
-<picture>
+</picture>
   
 # Sobre o projeto
 
