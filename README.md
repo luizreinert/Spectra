@@ -4,13 +4,12 @@
 </p>
 </picture>
 
-  ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   
 # Sobre o projeto
 
 <picture>
 <p align="center">
-<<<<<<< HEAD
   <img src="readme_images\gui_screenshot.png" width="1410" title="hover text">
 </p>
 </picture>
@@ -20,17 +19,6 @@ Este projeto faz parte do meu trabalho de conclusão de curso em Biomedicina, in
 
 Trata-se de uma interface gráfica construída em Python, e tem como objetivo otimizar os experimentos que visam a obtenção da porcentagem de inibição bacteriana e a Concentração Inibitória Mínima (CIM) em experimentos realizados em microplacas de 96 poços. Os dados obtidos são representados por meio de um gráfico, que pode ser personalizado e salvo em diferentes formatos.
  
-=======
-  <img src="readme_images\logo_spectra.png" width="1068" title="hover text">
-</p>
-</picture>
-
-Esse projeto faz parte do meu trabalho de conclusão de curso em Biomedicina, intitulado 
-"Análise comparativa entre uso de reveladores oxirredutores e de leitura automatizada na determinação da concentração inibitória mínima em bactérias de importância médica".
-
-A aplicação consiste em uma interface gráfica construída em Python, e tem como objetivo otimizar os experimentos que visam a obtenção da porcentagem de inibição bacteriana e a Concentração Inibitória Mínima (CIM) em experimentos realizados em microplacas de 96 poços. Os dados obtidos são representados por meio de um gráfico, que pode ser personalizado e salvo em diferentes formatos de arquivo.
->>>>>>> 1a1a94f64eeaedbaa7bf813b6c74df1b6e2eddbe
-
 ## Funcionalidades
 
 - Cálculo da porcentagem de inibição bacteriana
