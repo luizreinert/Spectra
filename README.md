@@ -8,16 +8,16 @@
   
 # Sobre o projeto
 
+Este projeto faz parte do meu trabalho de conclusão de curso em Biomedicina, intitulado 
+"Análise comparativa entre uso de reveladores oxirredutores e de leitura automatizada na determinação da concentração inibitória mínima em bactérias de importância médica".
+
+Trata-se de uma interface gráfica construída em Python, e tem como objetivo otimizar os experimentos que visam a obtenção da porcentagem de inibição bacteriana e a Concentração Inibitória Mínima (CIM) em experimentos realizados em microplacas de 96 poços. Os dados obtidos são representados por meio de um gráfico, que pode ser personalizado e salvo em diferentes formatos.
+
 <picture>
 <p align="center">
   <img src="readme_images\gui_screenshot.png" width="1410" title="hover text">
 </p>
 </picture>
-
-Este projeto faz parte do meu trabalho de conclusão de curso em Biomedicina, intitulado 
-"Análise comparativa entre uso de reveladores oxirredutores e de leitura automatizada na determinação da concentração inibitória mínima em bactérias de importância médica".
-
-Trata-se de uma interface gráfica construída em Python, e tem como objetivo otimizar os experimentos que visam a obtenção da porcentagem de inibição bacteriana e a Concentração Inibitória Mínima (CIM) em experimentos realizados em microplacas de 96 poços. Os dados obtidos são representados por meio de um gráfico, que pode ser personalizado e salvo em diferentes formatos.
  
 ## Funcionalidades
 
