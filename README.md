@@ -1,8 +1,9 @@
-
+<picture>
 <p align="center">
   <img src="readme_images\logo_spectra.png" width="1068" title="hover text">
 </p>
-
+<picture>
+  
 # Sobre o projeto
 
 ![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
