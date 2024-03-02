@@ -1,6 +1,6 @@
 <picture>
 <p align="center">
-  <img src="readme_images\logo_spectra.png" width="1068" height= "266" title="hover text">
+  <img src="readme_images\logo_spectra.png" width="1068" title="hover text">
 </p>
 </picture>
   
