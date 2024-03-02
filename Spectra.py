@@ -17,7 +17,7 @@ from CTkColorPicker import *
 from os.path import normpath
 import csv
 
-with open('textfile.txt', 'r', encoding='utf-8') as file:
+with open('assets\informacoes.txt', 'r', encoding='utf-8') as file:
     strings_txt = load(file)
 
 controle = []
@@ -79,22 +79,22 @@ def layout():
     espaço.grid(row=1)
 
     botao_dados = criarbotao_pLateral(barralateral, tabelaB, "Inserir dados")
-    botao_dados.grid(row=2, pady=8, padx=13)
+    botao_dados.grid(row=2, pady=12, padx=13)
     botao_dados.configure(command= lambda: tab_switch("dados"))
 
     botao_grafico = criarbotao_pLateral(barralateral, graficoB, "Gráfico")
-    botao_grafico.grid(row=3, pady=8, padx=13)
+    botao_grafico.grid(row=3, pady=12, padx=13)
     botao_grafico.configure(command= lambda : tab_switch("janela_grafico"))
 
     botao_info = criarbotao_pLateral(barralateral, infoB, "Informações")
-    botao_info.grid(row=4, pady=8, padx=13)
+    botao_info.grid(row=4, pady=12, padx=13)
     botao_info.configure(command= lambda: tab_switch("informacoes"))
 
     botao_sair = criarbotao_pLateral(barralateral, sairB, "Sair")
-    botao_sair.grid(row=6)
+    botao_sair.grid(padx=13, pady=12, row=6)
     botao_sair.configure(command= lambda: tab_switch("sair"))
 
-    espaço2 = ctk.CTkLabel(barralateral, text="\n\n\n\n\n")
+    espaço2 = ctk.CTkLabel(barralateral, text="\n\n\n\n")
     espaço2.grid(row=7) 
 
     barralateral.configure(width=180)
@@ -104,7 +104,7 @@ def layout():
     tab_switch("dados")
 
 def criarbotao_pLateral(root, icon, texto): # Cria os botões de troca de aba na barra lateral.
-    botao = ctk.CTkButton(master= root, cursor='hand2', width=150, height=40, image=icon, hover_color="#FBFBFE", font= fonte_icones, fg_color="#2B6AD0", text=texto, anchor="w")
+    botao = ctk.CTkButton(master= root, cursor='hand2', width=150, height=45, image=icon, hover_color="#FBFBFE", font= fonte_icones, fg_color="#2B6AD0", text=texto, anchor="w")
     return botao
 
 #####* Introduz os elementos gráficos da janela de dados #####
