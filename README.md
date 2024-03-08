@@ -24,7 +24,7 @@ Trata-se de uma interface gráfica construída em Python, e tem como objetivo ot
 - Cálculo da porcentagem de inibição bacteriana
 - Geração de gráficos personalizáveis
 
-# Como utilizar?
+## Como utilizar?
 
 Esse projeto foi pensado conforme os experimentos realizados no trabalho, com as bactérias Staphylococcus aureus e Escherichia coli, onde cada corante ocupa duas linhas (duplicata) e os controles positivos e negativos ocupam as duas últimas colunas da microplaca. No entanto, é possível configurar a posição dos controles nas duas últimas colunas, a bacteria utilizada e a concentração de antibiótico correspondente ao experimento. 
 
