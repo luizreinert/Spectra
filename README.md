@@ -38,6 +38,14 @@ This project was designed based on experiments conducted with *Staphylococcus au
 
 ## Setup
 
+You can run the application in two ways: by downloading the pre-built executable or by setting up the project locally.
+
+### Option 1: Download the Pre-built Executable
+1. Go to the [Releases](https://github.com/luizreinert/Spectra/releases) page.
+2. Download the `.exe` file from the latest release.
+3. Run the `.exe` file on a Windows machine.
+
+### Option 2: Run Locally
 To run the application locally, you'll need [Git](https://git-scm.com) and [Python](https://www.python.org/downloads/) installed.
 
 ```bash
@@ -45,7 +53,6 @@ To run the application locally, you'll need [Git](https://git-scm.com) and [Pyth
 $ git clone https://github.com/luizreinert/Spectra
 
 # Install dependencies
-$ pip install -r requirements.txt
 
 # Run the application
 $ python Spectra.py
