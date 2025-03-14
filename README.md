@@ -14,8 +14,7 @@
 
 ## Overview
 
-This project is part of my undergraduate thesis in Biomedicine, titled *"Comparative Analysis Between the Use of Oxyreductive Dye and Automated Reading in the Determination of the Minimum Inhibitory Concentration in Bacteria of Medial Importance"*. It is a Python-based graphical user interface (GUI) designed to optimize experiments aimed at determining the percentage of bacterial inhibition and the Minimum Inhibitory Concentration (MIC) in 96-well microplate experiments. The data obtained is represented through customizable graphs, which can be saved in various formats. This project builds upon the findings of a previously published article, **"[Comparative Analysis Between the Use of Oxidoreductant Revealers and Automated Reading in Determining the Minimum Inhibitory Concentration in Medically Important Bacteria](https://doi.org/10.46311/2318-0579.60.eUJ4398)"**  
-
+This project is part of my undergraduate thesis in Biomedicine, titled *"Comparative Analysis Between the Use of Oxyreductive Dye and Automated Reading in the Determination of the Minimum Inhibitory Concentration in Bacteria of Medical Importance"*. It is a Python-based graphical user interface (GUI) designed to optimize experiments aimed at determining the percentage of bacterial inhibition and the Minimum Inhibitory Concentration (MIC) in 96-well microplate experiments. The data obtained is represented through customizable graphs, which can be saved in various formats. This project builds upon the findings of a previously published [article](https://doi.org/10.46311/2318-0579.60.eUJ4398).
 ## Features
 
 ### Key Features:
